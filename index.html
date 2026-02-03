@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpeg" href="nova-icon.jpg">
     <title>Nova Dashboard ⭐</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-primary: #0d1117;
@@ -12,11 +13,9 @@
             --bg-tertiary: #21262d;
             --text-primary: #f0f6fc;
             --text-secondary: #8b949e;
-            --accent: #f97316;
-            --accent-dim: #ea580c;
+            --accent: #58a6ff;
             --success: #3fb950;
             --warning: #d29922;
-            --info: #58a6ff;
             --error: #f85149;
             --border: #30363d;
         }
@@ -24,24 +23,14 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-        }
-        
-        .app-container { display: flex; height: 100vh; }
-        
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
             padding: 1rem;
-            transition: margin-right 0.3s ease;
         }
         
-        .main-content.chat-open { margin-right: 400px; }
-        
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
         
         header {
             display: flex;
@@ -50,1227 +39,444 @@
             padding: 1rem 0;
             border-bottom: 1px solid var(--border);
             margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+        }
+        
+        header h1 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+        }
+        
+        header h1 img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .refresh-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .refresh-btn:hover { background: var(--border); }
+        
+        /* Sections */
+        .section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+        
+        /* Apps Grid */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
         }
         
-        .logo { display: flex; align-items: center; gap: 0.75rem; }
-        .logo-icon { font-size: 2rem; }
-        .logo h1 { font-size: 1.5rem; font-weight: 600; }
-        
-        .header-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-        
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--bg-secondary);
-            border-radius: 2rem;
-            font-size: 0.875rem;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-secondary);
-            transition: background 0.3s;
-        }
-        
-        .status-dot.connected { background: var(--success); animation: pulse 2s infinite; }
-        .status-dot.connecting { background: var(--warning); animation: pulse 0.5s infinite; }
-        .status-dot.error { background: var(--error); }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        .refresh-btn, .chat-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
+        .app-card {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            cursor: pointer;
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-decoration: none;
+            color: inherit;
             transition: all 0.2s;
         }
         
-        .refresh-btn:hover, .chat-toggle:hover {
-            background: var(--bg-tertiary);
+        .app-card:hover {
             border-color: var(--accent);
+            transform: translateY(-2px);
         }
         
-        .chat-toggle {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
+        .app-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
         }
         
-        .chat-toggle:hover { background: var(--accent-dim); }
+        .app-card .status {
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 10px;
+            margin-left: auto;
+        }
         
-        .refresh-btn.loading { opacity: 0.6; pointer-events: none; }
-        .refresh-btn.loading .refresh-icon { animation: spin 1s linear infinite; }
+        .app-card .status.live { background: var(--success); color: #000; }
+        .app-card .status.dev { background: var(--warning); color: #000; }
         
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .app-card p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
         
-        .grid {
+        .app-card .links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        .app-card .links a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .app-card .links a:hover { text-decoration: underline; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-card h4 {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-card .subtext {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* Charts */
+        .charts-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1rem;
         }
         
-        .card {
+        .chart-card {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 1.25rem;
+            border-radius: 8px;
+            padding: 1rem;
         }
         
-        .card-header {
+        .chart-card h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+        
+        /* Repos */
+        .repos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .repo-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.875rem;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .repo-card:hover { border-color: var(--accent); }
+        
+        .repo-card h4 {
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border);
+            gap: 0.375rem;
         }
         
-        .card-header-left { display: flex; align-items: center; gap: 0.5rem; }
-        .card-header h2 { font-size: 1rem; font-weight: 600; color: var(--text-secondary); }
-        .card-icon { font-size: 1.25rem; }
-        .card-badge {
-            font-size: 0.7rem;
-            padding: 0.125rem 0.5rem;
-            background: var(--bg-tertiary);
-            border-radius: 1rem;
-            color: var(--text-secondary);
-        }
-        
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-        
-        .stat {
-            text-align: center;
-            padding: 1rem;
-            background: var(--bg-tertiary);
-            border-radius: 0.5rem;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-        
-        .stat-label {
+        .repo-card p {
             font-size: 0.75rem;
             color: var(--text-secondary);
             margin-top: 0.25rem;
-        }
-        
-        .stat-value.loading {
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-        }
-        
-        .list { list-style: none; }
-        
-        .list-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .list-item:last-child { border-bottom: none; }
-        
-        .item-icon {
-            flex-shrink: 0;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            background: var(--bg-tertiary);
-        }
-        
-        .item-content { flex: 1; min-width: 0; }
-        .item-title { font-size: 0.875rem; margin-bottom: 0.25rem; }
-        .item-title a { color: var(--info); text-decoration: none; }
-        .item-title a:hover { text-decoration: underline; }
-        .item-meta { font-size: 0.75rem; color: var(--text-secondary); }
-        
-        .commit-hash {
-            font-family: monospace;
-            font-size: 0.7rem;
-            color: var(--info);
-            background: var(--bg-primary);
-            padding: 0.125rem 0.375rem;
-            border-radius: 0.25rem;
-            margin-right: 0.5rem;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-        
-        .gateway-info {
-            display: grid;
-            gap: 0.75rem;
-        }
-        
-        .gateway-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background: var(--bg-tertiary);
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-        }
-        
-        .gateway-label { color: var(--text-secondary); }
-        .gateway-value { font-family: monospace; color: var(--text-primary); }
-        .gateway-value.success { color: var(--success); }
-        .gateway-value.warning { color: var(--warning); }
-        .gateway-value.error { color: var(--error); }
-        
-        .full-width { grid-column: 1 / -1; }
-        
-        footer {
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-        
-        /* Chat Panel */
-        .chat-panel {
-            position: fixed;
-            top: 0;
-            right: -420px;
-            width: 400px;
-            height: 100vh;
-            background: var(--bg-secondary);
-            border-left: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            transition: right 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .chat-panel.open { right: 0; }
-        
-        .chat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-tertiary);
-        }
-        
-        .chat-header h3 { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; }
-        
-        .chat-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            line-height: 1;
-        }
-        
-        .chat-close:hover { color: var(--text-primary); }
-        
-        .chat-settings {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg-primary);
-        }
-        
-        .chat-settings input {
-            width: 100%;
-            padding: 0.5rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-family: monospace;
-        }
-        
-        .chat-settings input:focus { outline: none; border-color: var(--accent); }
-        .chat-settings label { display: block; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
-        
-        .settings-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
-        .settings-row:last-child { margin-bottom: 0; }
-        .settings-row > div { flex: 1; }
-        
-        .connect-btn {
-            padding: 0.5rem 1rem;
-            background: var(--accent);
-            border: none;
-            border-radius: 0.375rem;
-            color: white;
-            font-size: 0.75rem;
-            cursor: pointer;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        .connect-btn:hover { background: var(--accent-dim); }
-        .connect-btn:disabled { background: var(--bg-tertiary); color: var(--text-secondary); cursor: not-allowed; }
-        
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .message {
-            max-width: 85%;
-            padding: 0.75rem 1rem;
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        
-        .message.user {
-            align-self: flex-end;
-            background: var(--accent);
-            color: white;
-            border-bottom-right-radius: 0.25rem;
-        }
-        
-        .message.assistant {
-            align-self: flex-start;
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border-bottom-left-radius: 0.25rem;
-        }
-        
-        .message.system {
-            align-self: center;
-            background: transparent;
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
             color: var(--text-secondary);
             font-size: 0.75rem;
-            padding: 0.5rem;
-        }
-        
-        .message.error {
-            align-self: center;
-            background: rgba(248, 81, 73, 0.2);
-            color: var(--error);
-            font-size: 0.75rem;
-        }
-        
-        .typing-indicator { display: inline-flex; gap: 0.25rem; }
-        .typing-indicator span {
-            width: 6px;
-            height: 6px;
-            background: var(--text-secondary);
-            border-radius: 50%;
-            animation: typing 1s infinite;
-        }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes typing {
-            0%, 100% { opacity: 0.3; transform: translateY(0); }
-            50% { opacity: 1; transform: translateY(-2px); }
-        }
-        
-        .chat-input-container {
-            padding: 1rem;
             border-top: 1px solid var(--border);
-            background: var(--bg-tertiary);
+            margin-top: 2rem;
         }
         
-        .chat-input-wrapper { display: flex; gap: 0.5rem; }
-        
-        .chat-input {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            resize: none;
-            max-height: 120px;
-            font-family: inherit;
-        }
-        
-        .chat-input:focus { outline: none; border-color: var(--accent); }
-        .chat-input::placeholder { color: var(--text-secondary); }
-        
-        .chat-send {
-            width: 40px;
-            height: 40px;
-            background: var(--accent);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.25rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            align-self: flex-end;
-        }
-        
-        .chat-send:hover { background: var(--accent-dim); }
-        .chat-send:disabled { background: var(--bg-tertiary); color: var(--text-secondary); cursor: not-allowed; }
-        
-        .message pre {
-            background: var(--bg-primary);
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            overflow-x: auto;
-            margin: 0.5rem 0;
-            font-size: 0.8rem;
-        }
-        
-        .message code {
-            background: var(--bg-primary);
-            padding: 0.125rem 0.25rem;
-            border-radius: 0.25rem;
-            font-size: 0.85em;
-        }
-        
-        .message pre code { background: none; padding: 0; }
-        
-        @media (max-width: 768px) {
-            .main-content.chat-open { margin-right: 0; }
-            .chat-panel { width: 100%; right: -100%; }
-            .stat-grid { grid-template-columns: 1fr; }
-            header { flex-direction: column; align-items: flex-start; }
-            .grid { grid-template-columns: 1fr; }
-        }
+        .loading { color: var(--text-secondary); font-style: italic; }
+        .error { color: var(--error); }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <main class="main-content" id="mainContent">
-            <div class="container">
-                <header>
-                    <div class="logo">
-                        <span class="logo-icon">🔥</span>
-                        <h1>Nova Dashboard</h1>
-                    </div>
-                    <div class="header-actions">
-                        <div class="status-badge">
-                            <span class="status-dot" id="statusDot"></span>
-                            <span id="statusText">Disconnected</span>
-                        </div>
-                        <button class="refresh-btn" id="refreshBtn" title="Refresh data">
-                            <span class="refresh-icon">🔄</span>
-                            <span>Refresh</span>
-                        </button>
-                        <button class="chat-toggle" id="chatToggle">
-                            💬 Chat
-                        </button>
-                    </div>
-                </header>
-                
-                <div class="grid">
-                    <!-- Gateway Status -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-left">
-                                <span class="card-icon">⚡</span>
-                                <h2>Gateway Status</h2>
-                            </div>
-                            <span class="card-badge" id="gatewayBadge">offline</span>
-                        </div>
-                        <div class="gateway-info" id="gatewayInfo">
-                            <div class="empty-state">Connect to Gateway to see status</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Stats from Gateway -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-left">
-                                <span class="card-icon">📊</span>
-                                <h2>Session Stats</h2>
-                            </div>
-                            <span class="card-badge" id="statsBadge">--</span>
-                        </div>
-                        <div class="stat-grid" id="statsGrid">
-                            <div class="stat">
-                                <div class="stat-value loading" id="statMessages">--</div>
-                                <div class="stat-label">Messages Today</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value loading" id="statSessions">--</div>
-                                <div class="stat-label">Active Sessions</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value loading" id="statUptime">--</div>
-                                <div class="stat-label">Uptime</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value loading" id="statCost">--</div>
-                                <div class="stat-label">Est. Cost Today</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Recent Commits -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-left">
-                                <span class="card-icon">📝</span>
-                                <h2>Recent Commits</h2>
-                            </div>
-                            <span class="card-badge" id="commitsBadge">loading...</span>
-                        </div>
-                        <ul class="list" id="commitsList">
-                            <li class="empty-state">Loading commits...</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- GitHub Activity -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-left">
-                                <span class="card-icon">🔔</span>
-                                <h2>GitHub Activity</h2>
-                            </div>
-                            <span class="card-badge" id="activityBadge">loading...</span>
-                        </div>
-                        <ul class="list" id="activityList">
-                            <li class="empty-state">Loading activity...</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Active Sessions -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-left">
-                                <span class="card-icon">💬</span>
-                                <h2>Active Sessions</h2>
-                            </div>
-                            <span class="card-badge" id="sessionsBadge">--</span>
-                        </div>
-                        <ul class="list" id="sessionsList">
-                            <li class="empty-state">Connect to Gateway to see sessions</li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Cron Jobs -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-header-left">
-                                <span class="card-icon">⏰</span>
-                                <h2>Scheduled Jobs</h2>
-                            </div>
-                            <span class="card-badge" id="cronBadge">--</span>
-                        </div>
-                        <ul class="list" id="cronList">
-                            <li class="empty-state">Connect to Gateway to see jobs</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <footer>
-                    <p>Nova Dashboard v0.4.0 • Last refresh: <span id="lastRefresh">--</span></p>
-                </footer>
+    <div class="container">
+        <header>
+            <div>
+                <h1>
+                    <img src="nova-icon.jpg" alt="Nova">
+                    Nova Dashboard
+                </h1>
+                <p class="subtitle">Aria Labs Command Center</p>
             </div>
-        </main>
+            <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+        </header>
         
-        <!-- Chat Panel -->
-        <aside class="chat-panel" id="chatPanel">
-            <div class="chat-header">
-                <h3>⭐ Nova</h3>
-                <button class="chat-close" id="chatClose">×</button>
-            </div>
-            
-            <div class="chat-settings" id="chatSettings">
-                <div class="settings-row">
-                    <div>
-                        <label for="gatewayUrl">Gateway URL</label>
-                        <input type="text" id="gatewayUrl" placeholder="wss://nova.spofford.xyz" value="wss://nova.spofford.xyz">
+        <!-- Apps Section -->
+        <section class="section">
+            <h2 class="section-header">🚀 Apps & Projects</h2>
+            <div class="apps-grid">
+                <a href="https://accountability-dashboard-8ll.pages.dev" target="_blank" class="app-card">
+                    <h3>📊 Accountability Dashboard <span class="status live">LIVE</span></h3>
+                    <p>Track what politicians say vs what they do. 538 Congress members with real data.</p>
+                    <div class="links">
+                        <a href="https://github.com/jeremyspofford/accountability-dashboard">GitHub</a>
+                    </div>
+                </a>
+                <a href="https://suppr.pages.dev" target="_blank" class="app-card">
+                    <h3>🍽️ Suppr <span class="status live">LIVE</span></h3>
+                    <p>Social dining app. Host meals, find dinner companions.</p>
+                    <div class="links">
+                        <a href="https://github.com/jeremyspofford/suppr">GitHub</a>
+                    </div>
+                </a>
+                <a href="https://jeremyspofford.dev" target="_blank" class="app-card">
+                    <h3>👤 Portfolio <span class="status live">LIVE</span></h3>
+                    <p>Jeremy's professional portfolio site.</p>
+                    <div class="links">
+                        <a href="https://github.com/jeremyspofford/portfolio">GitHub</a>
+                    </div>
+                </a>
+                <div class="app-card" style="opacity: 0.6">
+                    <h3>📧 Mercury <span class="status dev">DEV</span></h3>
+                    <p>Email management CLI. Pending Gmail OAuth setup.</p>
+                    <div class="links">
+                        <a href="https://github.com/jeremyspofford/nova">GitHub (Nova)</a>
                     </div>
                 </div>
-                <div class="settings-row">
-                    <div>
-                        <label for="gatewayToken">Token</label>
-                        <input type="password" id="gatewayToken" placeholder="Optional...">
-                    </div>
-                    <button class="connect-btn" id="connectBtn">Connect</button>
-                </div>
             </div>
-            
-            <div class="chat-messages" id="chatMessages">
-                <div class="message system">
-                    Enter Gateway URL and connect to start chatting.
-                </div>
+        </section>
+        
+        <!-- Monitoring Section -->
+        <section class="section">
+            <h2 class="section-header">📈 Nova Monitoring</h2>
+            <div id="metrics-loading" class="loading">Loading metrics...</div>
+            <div id="metrics-content" style="display: none;">
+                <div class="stats-grid" id="stats-grid"></div>
+                <div class="charts-row" id="charts-row" style="margin-top: 1rem;"></div>
             </div>
-            
-            <div class="chat-input-container">
-                <div class="chat-input-wrapper">
-                    <textarea class="chat-input" id="chatInput" placeholder="Message Nova..." rows="1" disabled></textarea>
-                    <button class="chat-send" id="chatSend" disabled>↑</button>
-                </div>
+        </section>
+        
+        <!-- Repos Section -->
+        <section class="section">
+            <h2 class="section-header">📁 Repositories</h2>
+            <div class="repos-grid" id="repos-grid">
+                <div class="loading">Loading repos...</div>
             </div>
-        </aside>
+        </section>
+        
+        <footer>
+            <div id="footer-status">Loading...</div>
+        </footer>
     </div>
     
     <script>
-        // ============================================
-        // Nova Dashboard - Live Data Integration
-        // ============================================
+        const METRICS_URL = 'metrics.json';
+        const REPOS = [
+            'nova', 'nova-dashboard', 'accountability-dashboard', 'suppr', 
+            'portfolio', 'dotfiles', 'automations'
+        ];
         
-        const CONFIG = {
-            // GitHub repos to track
-            repos: [
-                'jeremyspofford/nova',
-                'jeremyspofford/nova-dashboard',
-                'jeremyspofford/moltbot-infra',
-                'jeremyspofford/portfolio',
-                'jeremyspofford/dotfiles'
-            ],
-            githubUser: 'jeremyspofford',
-            refreshInterval: 60000, // 1 minute
-            maxCommits: 8,
-            maxActivity: 6,
-        };
+        function formatNumber(n) {
+            if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+            if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+            if (n >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+            return n.toLocaleString();
+        }
         
-        // ============================================
-        // Dashboard Data Manager
-        // ============================================
+        function formatCost(n) { return '$' + n.toFixed(2); }
         
-        class DashboardData {
-            constructor() {
-                this.elements = {
-                    refreshBtn: document.getElementById('refreshBtn'),
-                    lastRefresh: document.getElementById('lastRefresh'),
-                    // Commits
-                    commitsList: document.getElementById('commitsList'),
-                    commitsBadge: document.getElementById('commitsBadge'),
-                    // Activity
-                    activityList: document.getElementById('activityList'),
-                    activityBadge: document.getElementById('activityBadge'),
-                    // Gateway
-                    gatewayInfo: document.getElementById('gatewayInfo'),
-                    gatewayBadge: document.getElementById('gatewayBadge'),
-                    // Stats
-                    statMessages: document.getElementById('statMessages'),
-                    statSessions: document.getElementById('statSessions'),
-                    statUptime: document.getElementById('statUptime'),
-                    statCost: document.getElementById('statCost'),
-                    statsBadge: document.getElementById('statsBadge'),
-                    // Sessions
-                    sessionsList: document.getElementById('sessionsList'),
-                    sessionsBadge: document.getElementById('sessionsBadge'),
-                    // Cron
-                    cronList: document.getElementById('cronList'),
-                    cronBadge: document.getElementById('cronBadge'),
-                };
+        function formatMs(ms) {
+            if (ms >= 60000) return (ms / 60000).toFixed(1) + 'm';
+            if (ms >= 1000) return (ms / 1000).toFixed(1) + 's';
+            return ms + 'ms';
+        }
+        
+        async function loadMetrics() {
+            const loadingEl = document.getElementById('metrics-loading');
+            const contentEl = document.getElementById('metrics-content');
+            
+            try {
+                const res = await fetch(METRICS_URL + '?t=' + Date.now());
+                const m = await res.json();
                 
-                this.refreshTimer = null;
-                this.init();
-            }
-            
-            init() {
-                this.elements.refreshBtn.addEventListener('click', () => this.refresh());
-                this.refresh();
-                this.startAutoRefresh();
-            }
-            
-            startAutoRefresh() {
-                this.refreshTimer = setInterval(() => this.refresh(), CONFIG.refreshInterval);
-            }
-            
-            async refresh() {
-                this.elements.refreshBtn.classList.add('loading');
+                loadingEl.style.display = 'none';
+                contentEl.style.display = 'block';
                 
-                try {
-                    await Promise.all([
-                        this.fetchCommits(),
-                        this.fetchActivity(),
-                    ]);
-                } catch (e) {
-                    console.error('Refresh error:', e);
-                }
+                const successRate = m.messages.user > 0 
+                    ? ((m.messages.user - m.messages.errors) / m.messages.user * 100).toFixed(0)
+                    : 100;
                 
-                this.elements.lastRefresh.textContent = new Date().toLocaleTimeString();
-                this.elements.refreshBtn.classList.remove('loading');
-            }
-            
-            async fetchCommits() {
-                try {
-                    const allCommits = [];
-                    
-                    for (const repo of CONFIG.repos) {
-                        try {
-                            const res = await fetch(`https://api.github.com/repos/${repo}/commits?per_page=5`);
-                            if (res.ok) {
-                                const commits = await res.json();
-                                commits.forEach(c => {
-                                    allCommits.push({
-                                        sha: c.sha.slice(0, 7),
-                                        message: c.commit.message.split('\n')[0],
-                                        repo: repo.split('/')[1],
-                                        date: new Date(c.commit.author.date),
-                                        url: c.html_url,
-                                        author: c.commit.author.name,
-                                    });
-                                });
-                            }
-                        } catch (e) {
-                            console.warn(`Failed to fetch ${repo}:`, e);
-                        }
-                    }
-                    
-                    // Sort by date, newest first
-                    allCommits.sort((a, b) => b.date - a.date);
-                    const recent = allCommits.slice(0, CONFIG.maxCommits);
-                    
-                    this.elements.commitsBadge.textContent = `${recent.length} recent`;
-                    
-                    if (recent.length === 0) {
-                        this.elements.commitsList.innerHTML = '<li class="empty-state">No commits found</li>';
-                        return;
-                    }
-                    
-                    this.elements.commitsList.innerHTML = recent.map(c => `
-                        <li class="list-item">
-                            <div class="item-icon">📝</div>
-                            <div class="item-content">
-                                <div class="item-title">
-                                    <a href="${c.url}" target="_blank" rel="noopener">
-                                        <span class="commit-hash">${c.sha}</span>${this.escapeHtml(c.message)}
-                                    </a>
-                                </div>
-                                <div class="item-meta">${c.repo} • ${this.timeAgo(c.date)}</div>
-                            </div>
-                        </li>
-                    `).join('');
-                    
-                } catch (e) {
-                    this.elements.commitsList.innerHTML = '<li class="empty-state">Failed to load commits</li>';
-                    this.elements.commitsBadge.textContent = 'error';
-                }
-            }
-            
-            async fetchActivity() {
-                try {
-                    const res = await fetch(`https://api.github.com/users/${CONFIG.githubUser}/events/public?per_page=30`);
-                    if (!res.ok) throw new Error('Failed to fetch');
-                    
-                    const events = await res.json();
-                    const interesting = events.filter(e => 
-                        ['PushEvent', 'CreateEvent', 'IssuesEvent', 'PullRequestEvent', 'IssueCommentEvent'].includes(e.type)
-                    ).slice(0, CONFIG.maxActivity);
-                    
-                    this.elements.activityBadge.textContent = `${interesting.length} events`;
-                    
-                    if (interesting.length === 0) {
-                        this.elements.activityList.innerHTML = '<li class="empty-state">No recent activity</li>';
-                        return;
-                    }
-                    
-                    this.elements.activityList.innerHTML = interesting.map(e => {
-                        const { icon, text } = this.formatEvent(e);
-                        return `
-                            <li class="list-item">
-                                <div class="item-icon">${icon}</div>
-                                <div class="item-content">
-                                    <div class="item-title">${text}</div>
-                                    <div class="item-meta">${e.repo.name.split('/')[1]} • ${this.timeAgo(new Date(e.created_at))}</div>
-                                </div>
-                            </li>
-                        `;
-                    }).join('');
-                    
-                } catch (e) {
-                    this.elements.activityList.innerHTML = '<li class="empty-state">Failed to load activity</li>';
-                    this.elements.activityBadge.textContent = 'error';
-                }
-            }
-            
-            formatEvent(e) {
-                switch (e.type) {
-                    case 'PushEvent':
-                        const commits = e.payload.commits?.length || 0;
-                        return { icon: '⬆️', text: `Pushed ${commits} commit${commits !== 1 ? 's' : ''}` };
-                    case 'CreateEvent':
-                        return { icon: '✨', text: `Created ${e.payload.ref_type} ${e.payload.ref || ''}` };
-                    case 'IssuesEvent':
-                        return { icon: '🐛', text: `${e.payload.action} issue: ${e.payload.issue?.title || ''}` };
-                    case 'PullRequestEvent':
-                        return { icon: '🔀', text: `${e.payload.action} PR: ${e.payload.pull_request?.title || ''}` };
-                    case 'IssueCommentEvent':
-                        return { icon: '💬', text: `Commented on #${e.payload.issue?.number}` };
-                    default:
-                        return { icon: '📌', text: e.type };
-                }
-            }
-            
-            // Called by chat when connected to gateway
-            updateGatewayStatus(data) {
-                this.elements.gatewayBadge.textContent = 'online';
-                this.elements.gatewayBadge.style.background = 'var(--success)';
-                this.elements.gatewayBadge.style.color = 'white';
-                
-                const health = data.snapshot?.health || {};
-                const uptime = data.snapshot?.uptimeMs || 0;
-                
-                this.elements.gatewayInfo.innerHTML = `
-                    <div class="gateway-row">
-                        <span class="gateway-label">Version</span>
-                        <span class="gateway-value">${data.server?.version || 'unknown'}</span>
+                document.getElementById('stats-grid').innerHTML = `
+                    <div class="stat-card">
+                        <h4>Messages</h4>
+                        <div class="value">${formatNumber(m.messages.total)}</div>
+                        <div class="subtext">${m.messages.user} prompts</div>
                     </div>
-                    <div class="gateway-row">
-                        <span class="gateway-label">Uptime</span>
-                        <span class="gateway-value">${this.formatDuration(uptime)}</span>
+                    <div class="stat-card">
+                        <h4>Tokens</h4>
+                        <div class="value">${formatNumber(m.tokens.total)}</div>
+                        <div class="subtext">${formatNumber(m.tokens.output)} output</div>
                     </div>
-                    <div class="gateway-row">
-                        <span class="gateway-label">Protocol</span>
-                        <span class="gateway-value">v${data.protocol || '?'}</span>
+                    <div class="stat-card">
+                        <h4>Cost (7d)</h4>
+                        <div class="value">${formatCost(m.cost.total)}</div>
+                        <div class="subtext">${Object.keys(m.cost.byDay).length} days</div>
                     </div>
-                    <div class="gateway-row">
-                        <span class="gateway-label">Connection</span>
-                        <span class="gateway-value success">${data.server?.connId || 'connected'}</span>
+                    <div class="stat-card">
+                        <h4>Success Rate</h4>
+                        <div class="value" style="color: ${successRate > 95 ? 'var(--success)' : 'var(--warning)'}">${successRate}%</div>
+                        <div class="subtext">${m.messages.errors} errors</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Avg Latency</h4>
+                        <div class="value">${formatMs(m.latency.avgMs)}</div>
+                        <div class="subtext">P95: ${formatMs(m.latency.p95Ms)}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Sessions</h4>
+                        <div class="value">${m.sessions.active}</div>
+                        <div class="subtext">active</div>
                     </div>
                 `;
                 
-                // Update uptime stat
-                this.elements.statUptime.textContent = this.formatDuration(uptime);
-                this.elements.statUptime.classList.remove('loading');
-            }
-            
-            updateSessions(sessions) {
-                this.elements.sessionsBadge.textContent = `${sessions.length} active`;
+                document.getElementById('charts-row').innerHTML = `
+                    <div class="chart-card">
+                        <h4>Cost by Day</h4>
+                        <div class="chart-container"><canvas id="costChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Activity (24h)</h4>
+                        <div class="chart-container"><canvas id="activityChart"></canvas></div>
+                    </div>
+                `;
                 
-                if (sessions.length === 0) {
-                    this.elements.sessionsList.innerHTML = '<li class="empty-state">No active sessions</li>';
-                    return;
-                }
+                renderCharts(m);
                 
-                this.elements.sessionsList.innerHTML = sessions.slice(0, 6).map(s => `
-                    <li class="list-item">
-                        <div class="item-icon">💬</div>
-                        <div class="item-content">
-                            <div class="item-title">${this.escapeHtml(s.label || s.sessionKey || 'unnamed')}</div>
-                            <div class="item-meta">${s.kind || 'main'} • ${s.channel || 'unknown'}</div>
-                        </div>
-                    </li>
-                `).join('');
-                
-                this.elements.statSessions.textContent = sessions.length;
-                this.elements.statSessions.classList.remove('loading');
-            }
-            
-            updateCronJobs(jobs) {
-                this.elements.cronBadge.textContent = `${jobs.length} jobs`;
-                
-                if (jobs.length === 0) {
-                    this.elements.cronList.innerHTML = '<li class="empty-state">No scheduled jobs</li>';
-                    return;
-                }
-                
-                this.elements.cronList.innerHTML = jobs.slice(0, 6).map(j => `
-                    <li class="list-item">
-                        <div class="item-icon">⏰</div>
-                        <div class="item-content">
-                            <div class="item-title">${this.escapeHtml(j.name || j.jobId || 'unnamed')}</div>
-                            <div class="item-meta">${j.schedule?.kind || 'unknown'} • ${j.enabled ? 'enabled' : 'disabled'}</div>
-                        </div>
-                    </li>
-                `).join('');
-            }
-            
-            resetGatewayStatus() {
-                this.elements.gatewayBadge.textContent = 'offline';
-                this.elements.gatewayBadge.style.background = '';
-                this.elements.gatewayBadge.style.color = '';
-                this.elements.gatewayInfo.innerHTML = '<div class="empty-state">Connect to Gateway to see status</div>';
-                this.elements.sessionsList.innerHTML = '<li class="empty-state">Connect to Gateway to see sessions</li>';
-                this.elements.cronList.innerHTML = '<li class="empty-state">Connect to Gateway to see jobs</li>';
-                this.elements.sessionsBadge.textContent = '--';
-                this.elements.cronBadge.textContent = '--';
-                
-                ['statMessages', 'statSessions', 'statUptime', 'statCost'].forEach(id => {
-                    this.elements[id].textContent = '--';
-                    this.elements[id].classList.add('loading');
-                });
-            }
-            
-            timeAgo(date) {
-                const seconds = Math.floor((new Date() - date) / 1000);
-                if (seconds < 60) return 'just now';
-                if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-                if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-                if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-                return date.toLocaleDateString();
-            }
-            
-            formatDuration(ms) {
-                const seconds = Math.floor(ms / 1000);
-                if (seconds < 60) return `${seconds}s`;
-                if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-                if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
-                return `${Math.floor(seconds / 86400)}d ${Math.floor((seconds % 86400) / 3600)}h`;
-            }
-            
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+                document.getElementById('footer-status').textContent = 
+                    `Metrics updated ${new Date(m.generatedAt).toLocaleString()} • ${m.periodHours}h period`;
+                    
+            } catch (err) {
+                loadingEl.innerHTML = `<span class="error">Failed to load metrics: ${err.message}</span>`;
             }
         }
         
-        // ============================================
-        // Chat Manager (WebSocket)
-        // ============================================
+        function renderCharts(m) {
+            const chartOpts = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
+                    y: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } }
+                }
+            };
+            
+            // Cost chart
+            const days = Object.keys(m.cost.byDay).sort().slice(-7);
+            new Chart(document.getElementById('costChart'), {
+                type: 'bar',
+                data: {
+                    labels: days.map(d => d.slice(5)),
+                    datasets: [{ data: days.map(d => m.cost.byDay[d]), backgroundColor: '#58a6ff' }]
+                },
+                options: chartOpts
+            });
+            
+            // Activity chart  
+            const now = new Date();
+            const hours = Array.from({length: 24}, (_, i) => {
+                const h = new Date(now - (23-i) * 3600000);
+                return h.toISOString().slice(0, 13);
+            });
+            new Chart(document.getElementById('activityChart'), {
+                type: 'line',
+                data: {
+                    labels: hours.map(h => h.slice(11) + ':00'),
+                    datasets: [{
+                        data: hours.map(h => m.activity.byHour[h] || 0),
+                        borderColor: '#3fb950',
+                        backgroundColor: 'rgba(63,185,80,0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: chartOpts
+            });
+        }
         
-        class NovaChat {
-            constructor(dashboard) {
-                this.dashboard = dashboard;
-                this.ws = null;
-                this.connected = false;
-                this.connecting = false;
-                this.messageId = 0;
-                this.pendingRequests = new Map();
-                this.streamingMessage = null;
-                
-                this.elements = {
-                    panel: document.getElementById('chatPanel'),
-                    toggle: document.getElementById('chatToggle'),
-                    close: document.getElementById('chatClose'),
-                    main: document.getElementById('mainContent'),
-                    messages: document.getElementById('chatMessages'),
-                    input: document.getElementById('chatInput'),
-                    send: document.getElementById('chatSend'),
-                    connect: document.getElementById('connectBtn'),
-                    url: document.getElementById('gatewayUrl'),
-                    token: document.getElementById('gatewayToken'),
-                    settings: document.getElementById('chatSettings'),
-                    statusDot: document.getElementById('statusDot'),
-                    statusText: document.getElementById('statusText'),
-                };
-                
-                this.init();
-            }
+        async function loadRepos() {
+            const grid = document.getElementById('repos-grid');
             
-            init() {
-                const savedUrl = localStorage.getItem('nova_gateway_url');
-                const savedToken = localStorage.getItem('nova_gateway_token');
-                if (savedUrl) this.elements.url.value = savedUrl;
-                if (savedToken) this.elements.token.value = savedToken;
-                
-                this.elements.toggle.addEventListener('click', () => this.togglePanel());
-                this.elements.close.addEventListener('click', () => this.togglePanel(false));
-                this.elements.connect.addEventListener('click', () => this.toggleConnection());
-                this.elements.send.addEventListener('click', () => this.sendMessage());
-                this.elements.input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        this.sendMessage();
-                    }
-                });
-                
-                this.elements.input.addEventListener('input', () => {
-                    this.elements.input.style.height = 'auto';
-                    this.elements.input.style.height = Math.min(this.elements.input.scrollHeight, 120) + 'px';
-                });
-                
-                const params = new URLSearchParams(window.location.search);
-                if (params.has('gateway')) this.elements.url.value = params.get('gateway');
-                if (params.has('token')) this.elements.token.value = params.get('token');
-                if (params.has('connect') || params.has('token')) {
-                    setTimeout(() => this.connect(), 500);
-                }
-            }
-            
-            togglePanel(open) {
-                const isOpen = open ?? !this.elements.panel.classList.contains('open');
-                this.elements.panel.classList.toggle('open', isOpen);
-                this.elements.main.classList.toggle('chat-open', isOpen);
-                if (isOpen) this.elements.input.focus();
-            }
-            
-            toggleConnection() {
-                if (this.connected || this.connecting) {
-                    this.disconnect();
-                } else {
-                    this.connect();
-                }
-            }
-            
-            connect() {
-                const url = this.elements.url.value.trim();
-                const token = this.elements.token.value.trim();
-                
-                if (!url) {
-                    this.addMessage('Please enter a Gateway URL', 'error');
-                    return;
-                }
-                
-                localStorage.setItem('nova_gateway_url', url);
-                if (token) localStorage.setItem('nova_gateway_token', token);
-                
-                this.connecting = true;
-                this.updateStatus('connecting');
-                this.elements.connect.textContent = 'Connecting...';
-                this.elements.connect.disabled = true;
-                
-                try {
-                    this.ws = new WebSocket(url);
-                    this.ws.onopen = () => this.sendHandshake(token);
-                    this.ws.onmessage = (e) => this.handleMessage(JSON.parse(e.data));
-                    this.ws.onclose = (e) => this.handleClose(e);
-                    this.ws.onerror = (e) => {
-                        console.error('WebSocket error:', e);
-                        this.addMessage('Connection error', 'error');
-                    };
-                } catch (e) {
-                    this.addMessage(`Failed: ${e.message}`, 'error');
-                    this.connecting = false;
-                    this.updateStatus('disconnected');
-                    this.elements.connect.textContent = 'Connect';
-                    this.elements.connect.disabled = false;
-                }
-            }
-            
-            sendHandshake(token) {
-                const params = {
-                    minProtocol: 3,
-                    maxProtocol: 3,
-                    client: {
-                        id: 'nova-dashboard',
-                        displayName: 'Nova Dashboard',
-                        version: '0.3.0',
-                        platform: navigator.platform,
-                        mode: 'ui'
-                    }
-                };
-                if (token) params.auth = { token };
-                
-                this.sendRequest('connect', params, (res) => {
-                    if (res.ok) {
-                        this.connected = true;
-                        this.connecting = false;
-                        this.updateStatus('connected');
-                        this.elements.connect.textContent = 'Disconnect';
-                        this.elements.connect.disabled = false;
-                        this.elements.input.disabled = false;
-                        this.elements.send.disabled = false;
-                        this.elements.settings.style.display = 'none';
-                        
-                        this.addMessage('Connected! 🔥', 'system');
-                        
-                        // Update dashboard with gateway info
-                        this.dashboard.updateGatewayStatus(res.payload);
-                        
-                        // Fetch additional data
-                        this.fetchSessions();
-                        this.fetchCronJobs();
-                        this.loadHistory();
-                    } else {
-                        this.addMessage(`Failed: ${res.error?.message || 'Unknown error'}`, 'error');
-                        this.ws.close();
-                    }
-                });
-            }
-            
-            fetchSessions() {
-                this.sendRequest('sessions.list', { limit: 20 }, (res) => {
-                    if (res.ok && res.payload?.sessions) {
-                        this.dashboard.updateSessions(res.payload.sessions);
-                    }
-                });
-            }
-            
-            fetchCronJobs() {
-                this.sendRequest('cron.list', { includeDisabled: true }, (res) => {
-                    if (res.ok && res.payload?.jobs) {
-                        this.dashboard.updateCronJobs(res.payload.jobs);
-                    }
-                });
-            }
-            
-            loadHistory() {
-                this.sendRequest('chat.history', { limit: 20 }, (res) => {
-                    if (res.ok && res.payload?.messages) {
-                        const messages = res.payload.messages.reverse();
-                        for (const msg of messages) {
-                            if (msg.role === 'user') {
-                                this.addMessage(msg.content, 'user', false);
-                            } else if (msg.role === 'assistant') {
-                                this.addMessage(msg.content, 'assistant', false);
-                            }
-                        }
-                    }
-                });
-            }
-            
-            disconnect() {
-                if (this.ws) this.ws.close();
-            }
-            
-            handleClose(e) {
-                this.connected = false;
-                this.connecting = false;
-                this.ws = null;
-                this.updateStatus('disconnected');
-                this.elements.connect.textContent = 'Connect';
-                this.elements.connect.disabled = false;
-                this.elements.input.disabled = true;
-                this.elements.send.disabled = true;
-                this.elements.settings.style.display = 'block';
-                this.dashboard.resetGatewayStatus();
-                
-                if (e.code !== 1000) {
-                    this.addMessage(`Disconnected (${e.code})`, 'system');
-                }
-            }
-            
-            handleMessage(msg) {
-                if (msg.type === 'res') {
-                    const handler = this.pendingRequests.get(msg.id);
-                    if (handler) {
-                        handler(msg);
-                        this.pendingRequests.delete(msg.id);
-                    }
-                    if (msg.payload?.runId && msg.payload?.status === 'done') {
-                        this.finishStreaming();
-                    }
-                }
-                if (msg.type === 'event') this.handleEvent(msg);
-            }
-            
-            handleEvent(msg) {
-                switch (msg.event) {
-                    case 'agent':
-                        this.handleAgentEvent(msg.payload);
-                        break;
-                }
-            }
-            
-            handleAgentEvent(payload) {
-                if (payload.delta?.text) {
-                    if (!this.streamingMessage) {
-                        this.streamingMessage = this.addMessage('', 'assistant', false);
-                    }
-                    this.streamingMessage.textContent += payload.delta.text;
-                    this.scrollToBottom();
-                }
-                if (payload.status === 'done' || payload.status === 'error') {
-                    this.finishStreaming();
-                }
-            }
-            
-            finishStreaming() {
-                if (this.streamingMessage) {
-                    this.streamingMessage.innerHTML = this.formatMessage(this.streamingMessage.textContent);
-                    this.streamingMessage = null;
-                }
-            }
-            
-            sendMessage() {
-                const text = this.elements.input.value.trim();
-                if (!text || !this.connected) return;
-                
-                this.addMessage(text, 'user');
-                this.elements.input.value = '';
-                this.elements.input.style.height = 'auto';
-                
-                const typing = this.addMessage('', 'assistant', false);
-                typing.innerHTML = '<span class="typing-indicator"><span></span><span></span><span></span></span>';
-                
-                const idempotencyKey = `msg-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-                
-                this.sendRequest('chat.send', { text, idempotencyKey }, (res) => {
-                    typing.remove();
-                    if (!res.ok) {
-                        this.addMessage(`Error: ${res.error?.message || 'Failed'}`, 'error');
-                    }
-                });
-            }
-            
-            sendRequest(method, params, callback) {
-                const id = `req-${++this.messageId}`;
-                if (callback) this.pendingRequests.set(id, callback);
-                this.ws.send(JSON.stringify({ type: 'req', id, method, params }));
-            }
-            
-            addMessage(content, type, scroll = true) {
-                const div = document.createElement('div');
-                div.className = `message ${type}`;
-                if (type === 'user' || type === 'assistant') {
-                    div.innerHTML = this.formatMessage(content);
-                } else {
-                    div.textContent = content;
-                }
-                this.elements.messages.appendChild(div);
-                if (scroll) this.scrollToBottom();
-                return div;
-            }
-            
-            formatMessage(text) {
-                if (!text) return '';
-                text = text.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-                text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-                text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-                const parts = text.split(/(<pre>[\s\S]*?<\/pre>)/);
-                return parts.map(p => p.startsWith('<pre>') ? p : p.replace(/\n/g, '<br>')).join('');
-            }
-            
-            scrollToBottom() {
-                this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
-            }
-            
-            updateStatus(status) {
-                const dot = this.elements.statusDot;
-                const text = this.elements.statusText;
-                dot.className = 'status-dot';
-                
-                switch (status) {
-                    case 'connected':
-                        dot.classList.add('connected');
-                        text.textContent = 'Connected';
-                        break;
-                    case 'connecting':
-                        dot.classList.add('connecting');
-                        text.textContent = 'Connecting...';
-                        break;
-                    default:
-                        text.textContent = 'Disconnected';
-                }
+            try {
+                const repoCards = REPOS.map(name => `
+                    <a href="https://github.com/jeremyspofford/${name}" target="_blank" class="repo-card">
+                        <h4>📦 ${name}</h4>
+                    </a>
+                `).join('');
+                grid.innerHTML = repoCards;
+            } catch (err) {
+                grid.innerHTML = `<span class="error">Failed to load repos</span>`;
             }
         }
         
-        // Initialize
-        const dashboard = new DashboardData();
-        const chat = new NovaChat(dashboard);
+        function loadAll() {
+            loadMetrics();
+            loadRepos();
+        }
+        
+        loadAll();
     </script>
 </body>
 </html>
