@@ -5,6 +5,7 @@
     { "task": "Write Mercury Gmail OAuth", "priority": "normal" }
   ],
   "blocked": [
+    { "task": "Nova Voice App", "blocker": "SPEC REVIEW — PWA with voice input, TTS, subagent panel. 4-7 day MVP. See specs/nova-voice-app.md" },
     { "task": "Get FEC API key", "blocker": "Sign up at api.data.gov" },
     { "task": "Deploy nova-dashboard theme update", "blocker": "Need CF API token or connect repo in dashboard" },
     { "task": "Review 15 repos for cleanup", "blocker": "See memory/repo-audit.md" },
@@ -12,10 +13,10 @@
     { "task": "Set up Ollama on Dell", "blocker": "Need Dell access" }
   ],
   "doneToday": [
+    { "task": "Nova Voice App spec", "outcome": "Draft complete, awaiting review" },
     { "task": "Audit all repos", "outcome": "10 keep, 15 review, 2 evaluate" },
     { "task": "Theme system + mobile fix", "outcome": "Light/dark toggle (pending deploy)" },
     { "task": "Write tests for accountability dashboard", "outcome": "Vitest + 25 tests" },
-    { "task": "Add ZIP code search", "outcome": "Find reps by ZIP" },
-    { "task": "Add filters to congress page", "outcome": "Chamber, party, state, search" }
+    { "task": "Add ZIP code search", "outcome": "Find reps by ZIP" }
   ]
 }
