@@ -953,11 +953,6 @@
     <script>
         const METRICS_URL = 'metrics.json';
         const KANBAN_URL = 'kanban.json';
-        const REPOS = [
-            'launchpad', 'dotfiles',
-            'nova', 'nova-dashboard', 'accountability-dashboard', 'suppr', 
-            'portfolio', 'dotfiles', 'automations'
-        ];
         
         // App data for modals
         const APP_DATA = {
@@ -1360,16 +1355,37 @@
         
         async function loadRepos() {
             const grid = document.getElementById('repos-grid');
+            grid.innerHTML = '<div class="loading">Loading repos...</div>';
             
             try {
-                const repoCards = REPOS.map(name => `
+                // Fetch from GitHub API (public, no auth needed)
+                const res = await fetch('https://api.github.com/users/jeremyspofford/repos?per_page=50&sort=pushed');
+                if (!res.ok) throw new Error('GitHub API error');
+                
+                const repos = await res.json();
+                
+                // Filter out archived repos
+                const activeRepos = repos.filter(r => !r.archived);
+                
+                if (activeRepos.length === 0) {
+                    grid.innerHTML = '<div class="loading">No active repositories</div>';
+                    return;
+                }
+                
+                grid.innerHTML = activeRepos.map(repo => `
+                    <a href="${repo.html_url}" target="_blank" class="repo-card" title="${repo.description || 'No description'}">
+                        <h4>📦 ${repo.name}</h4>
+                        ${repo.description ? `<p style="font-size:0.7rem;color:var(--text-secondary);margin-top:0.25rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${repo.description.slice(0, 45)}${repo.description.length > 45 ? '...' : ''}</p>` : ''}
+                    </a>
+                `).join('');
+            } catch (err) {
+                // Fallback to static list on error
+                const fallback = ['nova', 'nova-dashboard', 'accountability-dashboard', 'suppr', 'portfolio', 'dotfiles', 'mercury'];
+                grid.innerHTML = fallback.map(name => `
                     <a href="https://github.com/jeremyspofford/${name}" target="_blank" class="repo-card">
                         <h4>📦 ${name}</h4>
                     </a>
                 `).join('');
-                grid.innerHTML = repoCards;
-            } catch (err) {
-                grid.innerHTML = `<span class="error">Failed to load repos</span>`;
             }
         }
         
