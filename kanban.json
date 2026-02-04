@@ -1,8 +1,6 @@
 {
   "inProgress": [],
   "upNext": [
-    { "task": "Add tests to Mercury", "priority": "normal" },
-    { "task": "Add CI/CD workflow to Mercury", "priority": "normal" },
     { "task": "Update dashboard repos list dynamically from GitHub API", "priority": "normal" },
     { "task": "Add README badges to all active repos", "priority": "low" },
     { "task": "[JEREMY] Update arialabs.ai nameservers to Cloudflare (in Namecheap)", "priority": "high" },
@@ -21,6 +19,7 @@
     { "task": "1Password + Cloudflare integration", "outcome": "Autonomous access to secrets & DNS" },
     { "task": "Voting record charts", "outcome": "Already complete with 35 tests passing" },
     { "task": "Repo cleanup", "outcome": "Archived 11 stale repos (27→13 active)" },
-    { "task": "Mercury Gmail OAuth code", "outcome": "Already complete, needs Google Cloud creds" }
+    { "task": "Mercury Gmail OAuth code", "outcome": "Already complete, needs Google Cloud creds" },
+    { "task": "Mercury tests + CI", "outcome": "Added LLM & Gmail tests, CI runs on Python 3.11-3.13" }
   ]
 }
