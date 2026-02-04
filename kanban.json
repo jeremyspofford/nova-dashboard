@@ -1,7 +1,6 @@
 {
   "inProgress": [],
   "upNext": [
-    { "task": "Add voting record charts to rep pages", "priority": "normal" },
     { "task": "Write Mercury Gmail OAuth", "priority": "normal" },
     { "task": "[JEREMY] Update arialabs.ai nameservers to Cloudflare (in Namecheap)", "priority": "high" }
   ],
@@ -13,10 +12,9 @@
     { "task": "Set up Ollama on Dell", "blocker": "Need Dell access" }
   ],
   "doneToday": [
-    { "task": "Nova Voice App spec", "outcome": "Draft complete, awaiting review" },
-    { "task": "Audit all repos", "outcome": "10 keep, 15 review, 2 evaluate" },
-    { "task": "Theme system + mobile fix", "outcome": "Light/dark toggle (pending deploy)" },
-    { "task": "Write tests for accountability dashboard", "outcome": "Vitest + 25 tests" },
-    { "task": "Add ZIP code search", "outcome": "Find reps by ZIP" }
+    { "task": "Dashboard sidebar + modals", "outcome": "Navigation, floating modals, Nova project added" },
+    { "task": "Cloudflare Pages deploy for dashboard", "outcome": "Auto-deploys via GitHub Actions" },
+    { "task": "1Password + Cloudflare integration", "outcome": "Autonomous access to secrets & DNS" },
+    { "task": "Voting record charts", "outcome": "Already complete with 35 tests passing" }
   ]
 }
