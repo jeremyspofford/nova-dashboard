@@ -2,14 +2,14 @@
   "inProgress": [],
   "upNext": [
     { "task": "Add voting record charts to rep pages", "priority": "normal" },
-    { "task": "Write Mercury Gmail OAuth", "priority": "normal" }
+    { "task": "Write Mercury Gmail OAuth", "priority": "normal" },
+    { "task": "[JEREMY] Update arialabs.ai nameservers to Cloudflare (in Namecheap)", "priority": "high" }
   ],
   "blocked": [
     { "task": "Nova Voice App", "blocker": "SPEC REVIEW — PWA with voice input, TTS, subagent panel. 4-7 day MVP. See specs/nova-voice-app.md" },
     { "task": "Get FEC API key", "blocker": "Sign up at api.data.gov" },
-    { "task": "Deploy nova-dashboard theme update", "blocker": "Need CF API token or connect repo in dashboard" },
     { "task": "Review 15 repos for cleanup", "blocker": "See memory/repo-audit.md" },
-    { "task": "Set up dashboard.arialabs.ai", "blocker": "NS propagation" },
+    { "task": "Set up dashboard.arialabs.ai custom domain", "blocker": "Waiting for arialabs.ai nameservers to point to Cloudflare" },
     { "task": "Set up Ollama on Dell", "blocker": "Need Dell access" }
   ],
   "doneToday": [
