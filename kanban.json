@@ -2,12 +2,13 @@
   "lastUpdated": "2026-02-03T19:22:00-05:00",
   "inProgress": [],
   "upNext": [
-    {"task": "Research OpenSecrets API for campaign finance", "priority": "high", "added": "2026-02-03"},
+    {"task": "Integrate FEC API for campaign finance", "priority": "high", "added": "2026-02-03"},
     {"task": "Add state filter to accountability dashboard", "priority": "normal", "added": "2026-02-03"},
     {"task": "Add ZIP code search to accountability dashboard", "priority": "normal", "added": "2026-02-03"},
     {"task": "Write tests for accountability dashboard", "priority": "normal", "added": "2026-02-03"}
   ],
   "doneToday": [
+    {"task": "Research OpenSecrets API", "completed": "2026-02-03T19:24:00", "outcome": "DISCONTINUED - Use FEC API"},
     {"task": "Integrate Voteview for party alignment", "completed": "2026-02-03T19:22:00", "outcome": "537/538 members with real voting data"},
     {"task": "Research ProPublica Congress API", "completed": "2026-02-03T19:17:00", "outcome": "DISCONTINUED - Use Voteview instead"},
     {"task": "Fix bills_sponsored in accountability dashboard", "completed": "2026-02-03T19:18:00", "outcome": "Real data from Congress.gov API"},
