@@ -7,7 +7,6 @@
   "blocked": [
     { "task": "Nova Voice App", "blocker": "SPEC REVIEW — PWA with voice input, TTS, subagent panel. 4-7 day MVP. See specs/nova-voice-app.md" },
     { "task": "Get FEC API key", "blocker": "Sign up at api.data.gov" },
-    { "task": "Review 15 repos for cleanup", "blocker": "See memory/repo-audit.md" },
     { "task": "Set up dashboard.arialabs.ai custom domain", "blocker": "Waiting for arialabs.ai nameservers to point to Cloudflare" },
     { "task": "Set up Ollama on Dell", "blocker": "Need Dell access" }
   ],
@@ -15,6 +14,7 @@
     { "task": "Dashboard sidebar + modals", "outcome": "Navigation, floating modals, Nova project added" },
     { "task": "Cloudflare Pages deploy for dashboard", "outcome": "Auto-deploys via GitHub Actions" },
     { "task": "1Password + Cloudflare integration", "outcome": "Autonomous access to secrets & DNS" },
-    { "task": "Voting record charts", "outcome": "Already complete with 35 tests passing" }
+    { "task": "Voting record charts", "outcome": "Already complete with 35 tests passing" },
+    { "task": "Repo cleanup", "outcome": "Archived 11 stale repos (27→13 active)" }
   ]
 }
