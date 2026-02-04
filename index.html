@@ -843,14 +843,14 @@
                     <h2 class="section-header">🚀 Apps & Projects</h2>
                     <div class="apps-grid" id="apps-grid">
                         <div class="app-card" onclick="showAppModal('nova')">
-                            <h3>⭐ Nova <span class="status live">LIVE</span></h3>
+                            <h3>⭐ Nova <span class="status dev">BETA</span></h3>
                             <p>AI assistant powering Aria Labs. Persistent memory, multi-channel, proactive.</p>
                             <div class="links">
                                 <a href="https://github.com/jeremyspofford/nova" target="_blank" onclick="event.stopPropagation()">GitHub</a>
                             </div>
                         </div>
                         <div class="app-card" onclick="showAppModal('accountability')">
-                            <h3>📊 Accountability Dashboard <span class="status live">LIVE</span></h3>
+                            <h3>📊 Accountability Dashboard <span class="status dev">BETA</span></h3>
                             <p>Track what politicians say vs what they do. 538 Congress members with real data.</p>
                             <div class="links">
                                 <a href="https://accountability-dashboard-8ll.pages.dev" target="_blank" onclick="event.stopPropagation()">Live Site</a>
@@ -858,7 +858,7 @@
                             </div>
                         </div>
                         <div class="app-card" onclick="showAppModal('suppr')">
-                            <h3>🍽️ Suppr <span class="status live">LIVE</span></h3>
+                            <h3>🍽️ Suppr <span class="status dev">BETA</span></h3>
                             <p>Social dining app. Host meals, find dinner companions.</p>
                             <div class="links">
                                 <a href="https://suppr.pages.dev" target="_blank" onclick="event.stopPropagation()">Live Site</a>
@@ -866,7 +866,7 @@
                             </div>
                         </div>
                         <div class="app-card" onclick="showAppModal('portfolio')">
-                            <h3>👤 Portfolio <span class="status live">LIVE</span></h3>
+                            <h3>👤 Portfolio <span class="status dev">BETA</span></h3>
                             <p>Jeremy's professional portfolio site.</p>
                             <div class="links">
                                 <a href="https://jeremyspofford.dev" target="_blank" onclick="event.stopPropagation()">Live Site</a>
@@ -881,7 +881,7 @@
                             </div>
                         </div>
                         <div class="app-card" style="opacity: 0.7" onclick="showAppModal('dashboard')">
-                            <h3>📱 Nova Dashboard <span class="status live">LIVE</span></h3>
+                            <h3>📱 Nova Dashboard <span class="status dev">BETA</span></h3>
                             <p>This dashboard! Monitoring and control center for Aria Labs projects.</p>
                             <div class="links">
                                 <a href="https://github.com/jeremyspofford/nova-dashboard" target="_blank" onclick="event.stopPropagation()">GitHub</a>
@@ -954,6 +954,7 @@
         const METRICS_URL = 'metrics.json';
         const KANBAN_URL = 'kanban.json';
         const REPOS = [
+            'launchpad', 'dotfiles',
             'nova', 'nova-dashboard', 'accountability-dashboard', 'suppr', 
             'portfolio', 'dotfiles', 'automations'
         ];
@@ -963,7 +964,7 @@
             nova: {
                 title: '⭐ Nova',
                 description: 'AI assistant powering Aria Labs. Features persistent memory, multi-channel support (Telegram, Discord), proactive heartbeat system, and tool integrations.',
-                status: 'Live',
+                status: 'Beta',
                 tech: 'TypeScript, OpenClaw, Claude API',
                 repo: 'https://github.com/jeremyspofford/nova',
                 features: ['Persistent memory across sessions', 'Multi-channel messaging', 'Proactive heartbeats', 'Tool integrations', 'Cron job scheduling']
@@ -971,7 +972,7 @@
             accountability: {
                 title: '📊 Accountability Dashboard',
                 description: 'Track what politicians say vs what they do. Real data from Congress.gov API covering all 538 Congress members.',
-                status: 'Live',
+                status: 'Beta',
                 url: 'https://accountability-dashboard-8ll.pages.dev',
                 tech: 'Next.js, Tailwind CSS, Congress.gov API',
                 repo: 'https://github.com/jeremyspofford/accountability-dashboard',
@@ -980,7 +981,7 @@
             suppr: {
                 title: '🍽️ Suppr',
                 description: 'Social dining app where you can host meals or find dinner companions. MVP deployed with core features.',
-                status: 'Live',
+                status: 'Beta',
                 url: 'https://suppr.pages.dev',
                 tech: 'Next.js, Supabase, Tailwind CSS',
                 repo: 'https://github.com/jeremyspofford/suppr',
@@ -989,7 +990,7 @@
             portfolio: {
                 title: '👤 Portfolio',
                 description: 'Jeremy\'s professional portfolio showcasing projects and experience.',
-                status: 'Live',
+                status: 'Beta',
                 url: 'https://jeremyspofford.dev',
                 tech: 'Next.js, Tailwind CSS',
                 repo: 'https://github.com/jeremyspofford/portfolio',
@@ -1006,7 +1007,7 @@
             dashboard: {
                 title: '📱 Nova Dashboard',
                 description: 'Monitoring and control center for all Aria Labs projects. You\'re looking at it!',
-                status: 'Live',
+                status: 'Beta',
                 tech: 'HTML, CSS, JavaScript, Chart.js',
                 repo: 'https://github.com/jeremyspofford/nova-dashboard',
                 features: ['Project overview', 'Task board', 'Usage metrics', 'Real-time updates']
