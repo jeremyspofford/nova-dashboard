@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Tests</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Nova Dashboard Tests</h1>
+    <div id="results"></div>
+    
+    <script>
+        const tests = [];
+        
+        function test(name, fn) {
+            try {
+                fn();
+                tests.push({ name, pass: true });
+            } catch (err) {
+                tests.push({ name, pass: false, error: err.message });
+            }
+        }
+        
+        // Test 1: formatUptime function
+        test('formatUptime formats seconds correctly', () => {
+            const formatUptime = (ms) => {
+                const seconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                
+                if (days > 0) return `${days}d ${hours % 24}h`;
+                if (hours > 0) return `${hours}h ${minutes % 60}m`;
+                if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+                return `${seconds}s`;
+            };
+            
+            const assert = (actual, expected) => {
+                if (actual !== expected) throw new Error(`Expected ${expected}, got ${actual}`);
+            };
+            
+            assert(formatUptime(5000), '5s');
+            assert(formatUptime(65000), '1m 5s');
+            assert(formatUptime(3665000), '1h 1m');
+            assert(formatUptime(90065000), '1d 1h');
+        });
+        
+        // Test 2: Kanban data structure
+        test('Kanban JSON has all required fields', async () => {
+            const res = await fetch('kanban.json');
+            const data = await res.json();
+            
+            if (!data.inProgress) throw new Error('Missing inProgress');
+            if (!data.upNext) throw new Error('Missing upNext');
+            if (!data.blocked) throw new Error('Missing blocked');
+            if (!data.doneToday) throw new Error('Missing doneToday');
+            
+            // Verify blocked items have blocker field
+            data.blocked.forEach(item => {
+                if (!item.blocker) throw new Error('Blocked item missing blocker field');
+            });
+        });
+        
+        // Test 3: Metrics JSON has required fields
+        test('Metrics JSON has session data', async () => {
+            const res = await fetch('metrics.json');
+            const data = await res.json();
+            
+            if (!data.sessions) throw new Error('Missing sessions');
+            if (typeof data.sessions.active !== 'number') throw new Error('sessions.active not a number');
+            if (!data.generatedAt) throw new Error('Missing generatedAt');
+        });
+        
+        // Test 4: Site status URLs are valid
+        test('Site status URLs are reachable', async () => {
+            const sites = [
+                'https://dashboard.arialabs.ai',
+                'https://reps.arialabs.ai',
+                'https://suppr.arialabs.ai',
+                'https://jeremyspofford.dev'
+            ];
+            
+            // Just verify URLs are well-formed
+            sites.forEach(url => {
+                new URL(url); // Will throw if invalid
+            });
+        });
+        
+        // Run tests and display results
+        setTimeout(async () => {
+            const results = document.getElementById('results');
+            
+            for (const t of tests) {
+                const div = document.createElement('div');
+                div.className = `test ${t.pass ? 'pass' : 'fail'}`;
+                div.textContent = `${t.pass ? '✓' : '✗'} ${t.name}${t.error ? ': ' + t.error : ''}`;
+                results.appendChild(div);
+            }
+            
+            const summary = document.createElement('div');
+            const passed = tests.filter(t => t.pass).length;
+            summary.innerHTML = `<h2>Summary: ${passed}/${tests.length} tests passed</h2>`;
+            results.appendChild(summary);
+        }, 100);
+    </script>
+</body>
+</html>

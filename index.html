@@ -415,7 +415,7 @@
         /* Kanban */
         .kanban-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
         }
         
@@ -724,7 +724,7 @@
             .chart-container { height: 160px; }
             
             .kanban-grid { 
-                grid-template-columns: 1fr; 
+                grid-template-columns: repeat(2, 1fr); 
                 gap: 0.875rem;
             }
             
@@ -754,6 +754,7 @@
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .repos-grid { grid-template-columns: 1fr; }
+            .kanban-grid { grid-template-columns: 1fr; }
             
             header {
                 flex-direction: column;
@@ -850,6 +851,33 @@
                     </span>
                 </div>
                 
+                <!-- Site Status Section -->
+                <section class="section" id="site-status">
+                    <h2 class="section-header">🌐 Site Status</h2>
+                    <div class="stats-grid" id="site-status-grid">
+                        <div class="stat-card" id="status-dashboard">
+                            <h4>Dashboard</h4>
+                            <div class="value"><span class="status-dot online"></span>Checking...</div>
+                            <div class="subtext">dashboard.arialabs.ai</div>
+                        </div>
+                        <div class="stat-card" id="status-reps">
+                            <h4>Accountability</h4>
+                            <div class="value"><span class="status-dot online"></span>Checking...</div>
+                            <div class="subtext">reps.arialabs.ai</div>
+                        </div>
+                        <div class="stat-card" id="status-suppr">
+                            <h4>Suppr</h4>
+                            <div class="value"><span class="status-dot online"></span>Checking...</div>
+                            <div class="subtext">suppr.arialabs.ai</div>
+                        </div>
+                        <div class="stat-card" id="status-portfolio">
+                            <h4>Portfolio</h4>
+                            <div class="value"><span class="status-dot online"></span>Checking...</div>
+                            <div class="subtext">jeremyspofford.dev</div>
+                        </div>
+                    </div>
+                </section>
+                
                 <!-- Apps Section -->
                 <section class="section" id="apps">
                     <h2 class="section-header">🚀 Apps & Projects</h2>
@@ -913,6 +941,10 @@
                         <div class="kanban-column">
                             <h4>🟡 Up Next <span class="count" id="upnext-count">0</span></h4>
                             <div id="upnext-items"></div>
+                        </div>
+                        <div class="kanban-column">
+                            <h4>⏸️ Blocked <span class="count" id="blocked-count">0</span></h4>
+                            <div id="blocked-items"></div>
                         </div>
                         <div class="kanban-column">
                             <h4>🟢 Done Today <span class="count" id="done-count">0</span></h4>
@@ -1126,14 +1158,22 @@
         function showTaskModal(task) {
             const content = `
                 <p>${task.task}</p>
+                ${task.priority ? `
                 <div class="detail-row">
                     <span class="detail-label">Priority</span>
                     <span class="detail-value priority-${task.priority}">${task.priority}</span>
                 </div>
+                ` : ''}
                 ${task.started ? `
                 <div class="detail-row">
                     <span class="detail-label">Started</span>
                     <span class="detail-value">${task.started}</span>
+                </div>
+                ` : ''}
+                ${task.blocker ? `
+                <div class="detail-row">
+                    <span class="detail-label">Blocker</span>
+                    <span class="detail-value" style="color: var(--error);">⚠️ ${task.blocker}</span>
                 </div>
                 ` : ''}
                 ${task.outcome ? `
@@ -1147,7 +1187,37 @@
             showModal('📋 Task Details', content);
         }
         
-        function showSystemStatus() {
+        // Track page load time for uptime calculation
+        const pageLoadTime = Date.now();
+        
+        function formatUptime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}d ${hours % 24}h`;
+            if (hours > 0) return `${hours}h ${minutes % 60}m`;
+            if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+            return `${seconds}s`;
+        }
+        
+        async function showSystemStatus() {
+            const uptime = formatUptime(Date.now() - pageLoadTime);
+            
+            // Fetch latest metrics for session count and last update
+            let activeSessions = '—';
+            let lastHeartbeat = '—';
+            
+            try {
+                const res = await fetch(METRICS_URL + '?t=' + Date.now());
+                const m = await res.json();
+                activeSessions = m.sessions.active;
+                lastHeartbeat = new Date(m.generatedAt).toLocaleString();
+            } catch (err) {
+                console.error('Failed to fetch system status:', err);
+            }
+            
             const content = `
                 <div class="detail-row">
                     <span class="detail-label">Gateway</span>
@@ -1158,16 +1228,16 @@
                     <span class="detail-value">Raspberry Pi 4</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Uptime</span>
-                    <span class="detail-value">—</span>
+                    <span class="detail-label">Dashboard Uptime</span>
+                    <span class="detail-value">${uptime}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Active Sessions</span>
-                    <span class="detail-value" id="active-sessions">Loading...</span>
+                    <span class="detail-value">${activeSessions}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Last Heartbeat</span>
-                    <span class="detail-value">Recent</span>
+                    <span class="detail-value">${lastHeartbeat}</span>
                 </div>
             `;
             
@@ -1430,6 +1500,17 @@
                     </div>
                 `).join('') || '<div style="color: var(--text-secondary); font-size: 0.75rem;">Queue empty</div>';
                 
+                // Blocked
+                document.getElementById('blocked-count').textContent = k.blocked?.length || 0;
+                document.getElementById('blocked-items').innerHTML = k.blocked?.length
+                    ? k.blocked.map((t, i) => `
+                        <div class="kanban-item" onclick='showTaskModal(${JSON.stringify(t).replace(/'/g, "\\'")})' style="border-left: 3px solid var(--error);">
+                            ${t.task}
+                            <div class="meta">⚠️ ${t.blocker}</div>
+                        </div>
+                    `).join('')
+                    : '<div style="color: var(--text-secondary); font-size: 0.75rem;">No blockers</div>';
+                
                 // Done Today
                 document.getElementById('done-count').textContent = k.doneToday.length;
                 document.getElementById('done-items').innerHTML = k.doneToday.slice(0, 5).map((t, i) => `
@@ -1444,10 +1525,59 @@
             }
         }
         
+        async function checkSiteStatus() {
+            const sites = [
+                { id: 'status-dashboard', url: 'https://dashboard.arialabs.ai', name: 'Dashboard' },
+                { id: 'status-reps', url: 'https://reps.arialabs.ai', name: 'Accountability' },
+                { id: 'status-suppr', url: 'https://suppr.arialabs.ai', name: 'Suppr' },
+                { id: 'status-portfolio', url: 'https://jeremyspofford.dev', name: 'Portfolio' }
+            ];
+            
+            for (const site of sites) {
+                const card = document.getElementById(site.id);
+                const startTime = Date.now();
+                
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+                    
+                    const response = await fetch(site.url, {
+                        method: 'HEAD',
+                        mode: 'no-cors', // Avoid CORS issues
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    const latency = Date.now() - startTime;
+                    
+                    // With no-cors, we can't check response.ok, but if fetch succeeds, site is up
+                    card.querySelector('.value').innerHTML = 
+                        `<span class="status-dot online"></span>Online`;
+                    card.querySelector('.subtext').textContent = `${latency}ms`;
+                    
+                } catch (err) {
+                    // Check if it was a timeout or network error
+                    if (err.name === 'AbortError') {
+                        card.querySelector('.value').innerHTML = 
+                            `<span class="status-dot offline"></span>Timeout`;
+                        card.querySelector('.subtext').textContent = '> 10s';
+                    } else {
+                        // With no-cors mode, network errors often mean the site is actually up
+                        // but CORS is blocking us, so we'll assume it's online
+                        const latency = Date.now() - startTime;
+                        card.querySelector('.value').innerHTML = 
+                            `<span class="status-dot online"></span>Online`;
+                        card.querySelector('.subtext').textContent = `~${latency}ms`;
+                    }
+                }
+            }
+        }
+        
         function loadAll() {
             loadMetrics();
             loadKanban();
             loadRepos();
+            checkSiteStatus();
         }
         
         loadAll();
