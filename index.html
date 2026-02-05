@@ -793,6 +793,12 @@
                     <a href="#tasks" class="nav-link" data-section="tasks">
                         <span class="icon">📋</span> Task Board
                     </a>
+                    <a href="#subagents" class="nav-link" data-section="subagents">
+                        <span class="icon">🤖</span> Subagents
+                    </a>
+                    <a href="#deploys" class="nav-link" data-section="deploys">
+                        <span class="icon">🚀</span> Recent Deploys
+                    </a>
                     <a href="#metrics" class="nav-link" data-section="metrics">
                         <span class="icon">📈</span> Nova Metrics
                     </a>
@@ -958,6 +964,22 @@
                             <h4>🟢 Done Today <span class="count" id="done-count">0</span></h4>
                             <div id="done-items"></div>
                         </div>
+                    </div>
+                </section>
+                
+                <!-- Subagents Section -->
+                <section class="section" id="subagents">
+                    <h2 class="section-header">🤖 Active Subagents</h2>
+                    <div id="subagents-grid" class="apps-grid">
+                        <div class="loading">Loading subagents...</div>
+                    </div>
+                </section>
+                
+                <!-- Recent Deploys Section -->
+                <section class="section" id="deploys">
+                    <h2 class="section-header">🚀 Recent Deploys</h2>
+                    <div id="deploys-grid" class="apps-grid">
+                        <div class="loading">Loading deploy status...</div>
                     </div>
                 </section>
                 
@@ -1536,6 +1558,38 @@
                         <div class="meta">✓ ${t.outcome}</div>
                     </div>
                 `).join('') || '<div style="color: var(--text-secondary); font-size: 0.75rem;">Nothing yet</div>';
+                
+                // Subagents
+                const subagentsGrid = document.getElementById('subagents-grid');
+                if (k.subagents && k.subagents.length > 0) {
+                    subagentsGrid.innerHTML = k.subagents.map(s => `
+                        <div class="app-card" style="${s.status === 'active' ? 'border-color: var(--success);' : ''}">
+                            <h3>🤖 ${s.label} <span class="status ${s.status === 'active' ? 'live' : 'dev'}">${s.status}</span></h3>
+                            <p>${s.task}</p>
+                            ${s.spawned ? `<div class="meta" style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">Spawned: ${new Date(s.spawned).toLocaleString()}</div>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    subagentsGrid.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.875rem; font-style: italic;">No active subagents</div>';
+                }
+                
+                // Recent Deploys
+                const deploysGrid = document.getElementById('deploys-grid');
+                if (k.recentDeploys && k.recentDeploys.length > 0) {
+                    deploysGrid.innerHTML = k.recentDeploys.map(d => `
+                        <div class="app-card">
+                            <h3>${d.project}</h3>
+                            <p style="margin: 0.5rem 0;">${d.status}</p>
+                            ${d.notes ? `<p style="font-size: 0.75rem; color: var(--text-secondary);">${d.notes}</p>` : ''}
+                            <div class="links">
+                                <a href="${d.url}" target="_blank" onclick="event.stopPropagation()">View Site</a>
+                                ${d.deployed ? `<span style="font-size: 0.75rem; color: var(--text-secondary);">${new Date(d.deployed).toLocaleString()}</span>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    deploysGrid.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.875rem; font-style: italic;">No recent deploys</div>';
+                }
                 
             } catch (err) {
                 console.error('Failed to load kanban:', err);

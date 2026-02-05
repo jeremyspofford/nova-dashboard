@@ -1,21 +1,81 @@
 {
   "inProgress": [
-    { "task": "FaceDrill POC — Awaiting Jeremy review", "priority": "high" }
+    { 
+      "task": "FaceDrill POC — Awaiting Jeremy review", 
+      "priority": "high",
+      "url": "https://facedrill.arialabs.ai"
+    },
+    { 
+      "task": "Executive branch buildout — Executive orders feed", 
+      "priority": "high",
+      "notes": "Federal Register API integration"
+    },
+    { 
+      "task": "SCOTUS section — Justice voting patterns", 
+      "priority": "normal",
+      "notes": "9 justices with voting patterns tracker"
+    }
   ],
   "upNext": [
+    { "task": "Wealth tracking data integration", "priority": "high", "notes": "Needs PDF scraping infra (~2-4 weeks)" },
+    { "task": "Key votes integration — VoteView CSV", "priority": "high", "notes": "~1 week implementation" },
+    { "task": "'Who Benefits' analysis feature", "priority": "normal" },
+    { "task": "Campaign promises tracker", "priority": "normal" },
     { "task": "[JEREMY] Review FaceDrill POC (5 min)", "priority": "high" },
-    { "task": "[JEREMY] Sign up for FEC API key at api.data.gov", "priority": "normal" },
-    { "task": "[JEREMY] Set up Google Cloud project + OAuth creds for Mercury", "priority": "normal" },
-    { "task": "Add README badges to all active repos", "priority": "low" }
+    { "task": "[JEREMY] Add DNSSEC DS records", "priority": "high", "notes": "arialabs.ai + spofford.xyz" },
+    { "task": "[JEREMY] Move jeremyspofford.dev DNS to Cloudflare", "priority": "normal" },
+    { "task": "[JEREMY] Fix FEC API key", "priority": "normal", "notes": "Re-register at api.data.gov" },
+    { "task": "[JEREMY] Google Cloud OAuth for Mercury", "priority": "normal" }
   ],
   "blocked": [
+    { "task": "Committee data pipeline", "blocker": "Need ProPublica API key (free) — propublica.org/datastore/api" },
     { "task": "Nova Voice App", "blocker": "SPEC REVIEW — awaiting Jeremy's decision" },
     { "task": "Set up Ollama on Dell", "blocker": "Need Dell access / WoL fix" },
-    { "task": "Add campaign finance data to accountability dashboard", "blocker": "Need FEC API key" }
+    { "task": "Add campaign finance data", "blocker": "Need valid FEC API key" },
+    { "task": "Complete DNSSEC", "blocker": "Need DS records added at registrar" }
   ],
   "doneToday": [
-    { "task": "FaceDrill POC deployed", "outcome": "Live at facedrill.arialabs.ai" },
-    { "task": "Add FaceDrill to dashboard", "outcome": "Visible on dashboard.arialabs.ai" },
-    { "task": "Migrate FaceDrill subdomain", "outcome": "facedrill.arialabs.ai (was .pages.dev)" }
+    { "task": "Trump promises tracker", "outcome": "✅ 10 promises tracked at /executive/president", "time": "17:45" },
+    { "task": "Homepage redesign", "outcome": "✅ 3-branch dashboard, rebranded", "time": "17:38" },
+    { "task": "Grade badges on Congress page", "outcome": "✅ Live with breakdown bars", "time": "16:54" },
+    { "task": "New grading system", "outcome": "✅ 4 pillars (25% each), 26 tests passing", "time": "16:50" },
+    { "task": "Update About page", "outcome": "✅ New methodology documented", "time": "16:50" },
+    { "task": "Committee data integration", "outcome": "✅ Added to pipeline", "time": "16:50" },
+    { "task": "Add README badges to repos", "outcome": "✅ All repos updated", "time": "14:35" },
+    { "task": "Fix Mercury GitHub link", "outcome": "✅ Now points to mercury repo", "time": "14:32" },
+    { "task": "Rebrand nova repo", "outcome": "✅ README updated from Ember to Nova", "time": "14:31" },
+    { "task": "Cloudflare security audit", "outcome": "✅ All security features enabled", "time": "13:12" },
+    { "task": "FaceDrill POC deployed", "outcome": "✅ Live at facedrill.arialabs.ai", "time": "09:28" }
+  ],
+  "subagents": [
+    {
+      "label": "dashboard-update",
+      "task": "Update Nova monitoring dashboard with current project status",
+      "status": "active",
+      "spawned": "2026-02-05T23:15:00Z"
+    }
+  ],
+  "recentDeploys": [
+    {
+      "project": "Accountability Dashboard",
+      "url": "https://reps.arialabs.ai",
+      "status": "✅ Live",
+      "deployed": "2026-02-05T22:45:00Z",
+      "notes": "Homepage redesign, Trump promises tracker, new grading system"
+    },
+    {
+      "project": "FaceDrill POC",
+      "url": "https://facedrill.arialabs.ai",
+      "status": "🟡 Pending Review",
+      "deployed": "2026-02-05T09:28:00Z",
+      "notes": "Awaiting Jeremy's approval"
+    },
+    {
+      "project": "Nova Dashboard",
+      "url": "https://dashboard.arialabs.ai",
+      "status": "✅ Live",
+      "deployed": "2026-02-05T17:46:00Z",
+      "notes": "Metrics updated hourly"
+    }
   ]
 }
