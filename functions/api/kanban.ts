@@ -145,9 +145,9 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
     // Use service role key for writes (bypasses RLS) or fall back to anon key
     const apiKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
 
-    // Upsert (insert or update)
+    // Upsert (insert or update on task_id conflict)
     const response = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/kanban_tasks`,
+      `${env.SUPABASE_URL}/rest/v1/kanban_tasks?on_conflict=task_id`,
       {
         method: 'POST',
         headers: {
@@ -164,6 +164,7 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
           status: body.status,
           priority: body.priority,
           metadata: body.metadata || {},
+          updated_at: new Date().toISOString(),
         }),
       }
     );
@@ -203,6 +204,133 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
 }
 
 /**
+ * PUT /api/kanban - Update an existing task by task_id
+ */
+async function handlePut(request: Request, env: Env): Promise<Response> {
+  try {
+    const body = await request.json() as Partial<KanbanTask> & { task_id: string };
+
+    if (!body.task_id) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'task_id is required for updates' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    // Validate status if provided
+    if (body.status && !['backlog', 'in_progress', 'done', 'blocked'].includes(body.status)) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid status' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    // Validate priority if provided
+    if (body.priority && !['high', 'medium', 'low'].includes(body.priority)) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid priority' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    const apiKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
+
+    // Build update payload (only include provided fields)
+    const updatePayload: Record<string, any> = { updated_at: new Date().toISOString() };
+    if (body.title) updatePayload.title = body.title;
+    if (body.description !== undefined) updatePayload.description = body.description;
+    if (body.assignee) updatePayload.assignee = body.assignee;
+    if (body.status) updatePayload.status = body.status;
+    if (body.priority) updatePayload.priority = body.priority;
+    if (body.metadata) updatePayload.metadata = body.metadata;
+
+    const response = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/kanban_tasks?task_id=eq.${encodeURIComponent(body.task_id)}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': apiKey,
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation',
+        },
+        body: JSON.stringify(updatePayload),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Supabase error: ${error}`);
+    }
+
+    const tasks = await response.json();
+    if (!tasks.length) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Task not found' }),
+        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, data: tasks[0] }),
+      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
+      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+    );
+  }
+}
+
+/**
+ * DELETE /api/kanban - Delete a task by task_id (passed as query param)
+ */
+async function handleDelete(request: Request, env: Env): Promise<Response> {
+  try {
+    const url = new URL(request.url);
+    const taskId = url.searchParams.get('task_id');
+
+    if (!taskId) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'task_id query parameter is required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
+    const apiKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
+
+    const response = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/kanban_tasks?task_id=eq.${encodeURIComponent(taskId)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'apikey': apiKey,
+          'Authorization': `Bearer ${apiKey}`,
+          'Prefer': 'return=representation',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Supabase error: ${error}`);
+    }
+
+    const deleted = await response.json();
+    return new Response(
+      JSON.stringify({ success: true, deleted: deleted.length }),
+      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
+      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+    );
+  }
+}
+
+/**
  * Main handler
  */
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
@@ -219,6 +347,10 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
       return handleGet(env);
     case 'POST':
       return handlePost(request, env);
+    case 'PUT':
+      return handlePut(request, env);
+    case 'DELETE':
+      return handleDelete(request, env);
     default:
       return new Response(
         JSON.stringify({ success: false, error: 'Method not allowed' }),
