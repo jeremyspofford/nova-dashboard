@@ -9,10 +9,14 @@
     }
   ],
   "upNext": [
-    { "task": "LEG-2: Campaign positions tracker (promises vs votes)", "priority": "high", "assignee": "Nova", "notes": "Need data source (VoteSmart API?)" },
-    { "task": "LEG-3: Improve grading system", "priority": "medium", "assignee": "Nova", "notes": "Factor in votes, donors, trades" },
-    { "task": "EXEC-4: Trump corruption deep-dive", "priority": "medium", "assignee": "Nova", "notes": "Expand who he represents analysis" },
-    { "task": "DATA-11: Senate financial disclosures", "priority": "medium", "assignee": "Nova", "notes": "efdsearch.senate.gov under maintenance" },
+    { "task": "DATA-12: Refresh FEC finance data (cash on hand, self-funding)", "priority": "high", "assignee": "Nova", "notes": "Current data has all zeros - OpenFEC API key available" },
+    { "task": "DATA-13: Verify stock trades data accuracy via Quiver API", "priority": "high", "assignee": "Nova", "notes": "Check if Schumer missing trades is accurate" },
+    { "task": "LEG-2: Campaign positions tracker", "priority": "high", "assignee": "Nova", "notes": "VoteSmart API available" },
+    { "task": "SUPPR-1: Integrate Yelp API for restaurant data", "priority": "medium", "assignee": "Nova", "notes": "Yelp API key in 1Password" },
+    { "task": "SUPPR-2: Add restaurant ratings and photos", "priority": "medium", "assignee": "Nova" },
+    { "task": "FACEDRILL-1: Add spaced repetition algorithm", "priority": "medium", "assignee": "Nova", "notes": "Improve learning retention" },
+    { "task": "FACEDRILL-2: Import from LinkedIn/Slack", "priority": "low", "assignee": "Nova" },
+    { "task": "PORTFOLIO-1: Add SEO metadata and OG images", "priority": "low", "assignee": "Nova" },
     { "task": "[JEREMY] Review FaceDrill POC (5 min)", "priority": "high", "assignee": "Jeremy" }
   ],
   "blocked": [
