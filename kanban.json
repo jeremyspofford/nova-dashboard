@@ -2,12 +2,6 @@
   "lastUpdated": "2026-02-06T19:20:00Z",
   "inProgress": [
     { 
-      "task": "LEG-3: Improve grading system",
-      "priority": "medium",
-      "assignee": "Nova (grading-system subagent)",
-      "notes": "Multi-factor grading: votes, donors, trades, disclosures"
-    },
-    { 
       "task": "FaceDrill POC — Awaiting Jeremy review", 
       "priority": "high",
       "url": "https://facedrill.arialabs.ai",
@@ -26,6 +20,7 @@
     { "task": "Committee data (full 535 members)", "blocker": "ProPublica API discontinued — have 37 committees from Congress.gov", "assignee": "Nova" }
   ],
   "doneToday": [
+    { "task": "LEG-3: Multi-factor grading system", "outcome": "✅ 4 pillars (votes, donors, trades, disclosures), 62 tests", "time": "18:04" },
     { "task": "HOME-1: Remove 'Coming Soon' badges", "outcome": "✅ Executive/Judicial clickable", "time": "11:48" },
     { "task": "EXEC-1: Trump metrics rework", "outcome": "✅ Approval 42.3%, who he represents (Musk, donors, foreign govs), policy impact", "time": "11:50" },
     { "task": "EXEC-2: Cabinet enrichment", "outcome": "✅ All 16 members: bios, conflicts (severity rated), net worth", "time": "11:50" },
