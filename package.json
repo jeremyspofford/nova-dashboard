@@ -1,0 +1,26 @@
+{
+  "name": "nova-dashboard",
+  "version": "1.0.0",
+  "description": "Monitoring and control center for Aria Labs projects",
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "migrate": "node migrate-kanban-data.js",
+    "dev": "wrangler pages dev .",
+    "deploy": "wrangler pages deploy ."
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250115.0",
+    "vitest": "^1.2.1",
+    "wrangler": "^3.90.0"
+  },
+  "keywords": [
+    "dashboard",
+    "kanban",
+    "cloudflare-pages"
+  ],
+  "author": "Jeremy Spofford",
+  "license": "MIT"
+}

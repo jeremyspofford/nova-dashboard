@@ -9,16 +9,54 @@ A lightweight static dashboard showing project status, task board, usage metrics
 ## Features
 
 - 📊 **Project Overview** — Status of all Aria Labs apps
-- ✅ **Task Board** — Kanban-style task tracking
+- ✅ **Live Task Board** — Real-time kanban powered by Supabase API
 - 📈 **Usage Metrics** — Token usage, costs, and trends
-- 🔄 **Real-time Updates** — Auto-refresh every hour via cron
+- 🔄 **Auto-sync** — Tasks update immediately without commits/deploys
 
 ## Tech Stack
 
 - **Frontend:** Vanilla HTML/CSS/JavaScript
+- **Backend:** Cloudflare Pages Functions (API routes)
+- **Database:** Supabase (PostgreSQL)
 - **Charts:** Chart.js
 - **Hosting:** Cloudflare Pages
-- **Data:** Static JSON files updated via GitHub Actions
+
+## API
+
+The dashboard includes a REST API for kanban task management. See [API.md](./API.md) for full documentation.
+
+**Quick example:**
+```bash
+# Fetch all tasks
+curl https://dashboard.arialabs.ai/api/kanban
+
+# Create/update a task
+curl -X POST https://dashboard.arialabs.ai/api/kanban \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task_id": "DATA-12",
+    "title": "Refresh FEC finance data",
+    "assignee": "Nova",
+    "status": "in_progress",
+    "priority": "high"
+  }'
+```
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Local development
+npm run dev
+
+# Deploy
+npm run deploy
+```
 
 ## Live
 

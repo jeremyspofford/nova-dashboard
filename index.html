@@ -1026,7 +1026,7 @@
     
     <script>
         const METRICS_URL = 'metrics.json';
-        const KANBAN_URL = 'kanban.json';
+        const KANBAN_API = '/api/kanban';
         
         // App data for modals
         const APP_DATA = {
@@ -1515,8 +1515,45 @@
         
         async function loadKanban() {
             try {
-                const res = await fetch(KANBAN_URL + '?t=' + Date.now());
-                kanbanData = await res.json();
+                const res = await fetch(KANBAN_API + '?t=' + Date.now());
+                const apiResponse = await res.json();
+                
+                if (!apiResponse.success) {
+                    throw new Error(apiResponse.error || 'Failed to load kanban data');
+                }
+                
+                const tasks = apiResponse.data;
+                
+                // Transform API data to match old format
+                kanbanData = {
+                    inProgress: tasks.filter(t => t.status === 'in_progress').map(t => ({
+                        task: `${t.task_id}: ${t.title}`,
+                        priority: t.priority,
+                        assignee: t.assignee,
+                        notes: t.description,
+                        url: t.metadata?.url,
+                        started: new Date(t.updated_at).toLocaleTimeString()
+                    })),
+                    upNext: tasks.filter(t => t.status === 'backlog').map(t => ({
+                        task: `${t.task_id}: ${t.title}`,
+                        priority: t.priority,
+                        assignee: t.assignee,
+                        notes: t.description
+                    })),
+                    blocked: tasks.filter(t => t.status === 'blocked').map(t => ({
+                        task: `${t.task_id}: ${t.title}`,
+                        blocker: t.description || 'Unknown blocker',
+                        assignee: t.assignee
+                    })),
+                    doneToday: tasks.filter(t => t.status === 'done').map(t => ({
+                        task: `${t.task_id}: ${t.title}`,
+                        outcome: t.metadata?.outcome || '✅ Completed',
+                        time: new Date(t.updated_at).toLocaleTimeString()
+                    })),
+                    subagents: [],
+                    recentDeploys: []
+                };
+                
                 const k = kanbanData;
                 
                 // In Progress
