@@ -1,67 +1,44 @@
 {
+  "lastUpdated": "2026-02-06T19:20:00Z",
   "inProgress": [
     { 
       "task": "FaceDrill POC — Awaiting Jeremy review", 
       "priority": "high",
-      "url": "https://facedrill.arialabs.ai"
-    },
-    { 
-      "task": "Executive branch buildout — Executive orders feed", 
-      "priority": "high",
-      "notes": "Federal Register API integration"
-    },
-    { 
-      "task": "SCOTUS section — Justice voting patterns", 
-      "priority": "normal",
-      "notes": "9 justices with voting patterns tracker"
+      "url": "https://facedrill.arialabs.ai",
+      "assignee": "Jeremy"
     }
   ],
   "upNext": [
-    { "task": "Wealth tracking data integration", "priority": "high", "notes": "Needs PDF scraping infra (~2-4 weeks)" },
-    { "task": "Key votes integration — VoteView CSV", "priority": "high", "notes": "~1 week implementation" },
-    { "task": "'Who Benefits' analysis feature", "priority": "normal" },
-    { "task": "Campaign promises tracker", "priority": "normal" },
-    { "task": "[JEREMY] Review FaceDrill POC (5 min)", "priority": "high" },
-    { "task": "[JEREMY] Add DNSSEC DS records", "priority": "high", "notes": "arialabs.ai + spofford.xyz" },
-    { "task": "[JEREMY] Move jeremyspofford.dev DNS to Cloudflare", "priority": "normal" },
-    { "task": "[JEREMY] Fix FEC API key", "priority": "normal", "notes": "Re-register at api.data.gov" },
-    { "task": "[JEREMY] Google Cloud OAuth for Mercury", "priority": "normal" }
+    { "task": "LEG-2: Campaign positions tracker (promises vs votes)", "priority": "high", "assignee": "Nova", "notes": "Need data source (VoteSmart API?)" },
+    { "task": "LEG-3: Improve grading system", "priority": "medium", "assignee": "Nova", "notes": "Factor in votes, donors, trades" },
+    { "task": "EXEC-4: Trump corruption deep-dive", "priority": "medium", "assignee": "Nova", "notes": "Expand who he represents analysis" },
+    { "task": "DATA-11: Senate financial disclosures", "priority": "medium", "assignee": "Nova", "notes": "efdsearch.senate.gov under maintenance" },
+    { "task": "[JEREMY] Review FaceDrill POC (5 min)", "priority": "high", "assignee": "Jeremy" }
   ],
   "blocked": [
-    { "task": "Committee data pipeline", "blocker": "Need ProPublica API key (free) — propublica.org/datastore/api" },
-    { "task": "Nova Voice App", "blocker": "SPEC REVIEW — awaiting Jeremy's decision" },
-    { "task": "Set up Ollama on Dell", "blocker": "Need Dell access / WoL fix" },
-    { "task": "Add campaign finance data", "blocker": "Need valid FEC API key" },
-    { "task": "Complete DNSSEC", "blocker": "Need DS records added at registrar" }
+    { "task": "Senate financial disclosures", "blocker": "efdsearch.senate.gov under maintenance", "assignee": "Nova" },
+    { "task": "Committee data (full 535 members)", "blocker": "ProPublica API discontinued — have 37 committees from Congress.gov", "assignee": "Nova" }
   ],
   "doneToday": [
-    { "task": "Trump promises tracker", "outcome": "✅ 10 promises tracked at /executive/president", "time": "17:45" },
-    { "task": "Homepage redesign", "outcome": "✅ 3-branch dashboard, rebranded", "time": "17:38" },
-    { "task": "Grade badges on Congress page", "outcome": "✅ Live with breakdown bars", "time": "16:54" },
-    { "task": "New grading system", "outcome": "✅ 4 pillars (25% each), 26 tests passing", "time": "16:50" },
-    { "task": "Update About page", "outcome": "✅ New methodology documented", "time": "16:50" },
-    { "task": "Committee data integration", "outcome": "✅ Added to pipeline", "time": "16:50" },
-    { "task": "Add README badges to repos", "outcome": "✅ All repos updated", "time": "14:35" },
-    { "task": "Fix Mercury GitHub link", "outcome": "✅ Now points to mercury repo", "time": "14:32" },
-    { "task": "Rebrand nova repo", "outcome": "✅ README updated from Ember to Nova", "time": "14:31" },
-    { "task": "Cloudflare security audit", "outcome": "✅ All security features enabled", "time": "13:12" },
-    { "task": "FaceDrill POC deployed", "outcome": "✅ Live at facedrill.arialabs.ai", "time": "09:28" }
+    { "task": "HOME-1: Remove 'Coming Soon' badges", "outcome": "✅ Executive/Judicial clickable", "time": "11:48" },
+    { "task": "EXEC-1: Trump metrics rework", "outcome": "✅ Approval 42.3%, who he represents (Musk, donors, foreign govs), policy impact", "time": "11:50" },
+    { "task": "EXEC-2: Cabinet enrichment", "outcome": "✅ All 16 members: bios, conflicts (severity rated), net worth", "time": "11:50" },
+    { "task": "DATA-9: Committee assignments", "outcome": "✅ 37 committees, 25 leadership positions", "time": "11:50" },
+    { "task": "LEG-1: Financial disclosures UI", "outcome": "✅ Section on rep pages with PDF links", "time": "11:50" },
+    { "task": "House financial disclosures data", "outcome": "✅ 388 members, 1,872 filings (2020-2024)", "time": "10:41" },
+    { "task": "Vote UX improvements", "outcome": "✅ Roll call viewer, rep page modals, category filters", "time": "09:50" },
+    { "task": "Who Benefits analysis", "outcome": "✅ All 258 votes enriched with beneficiary data", "time": "09:32" },
+    { "task": "Trump promises harm analysis", "outcome": "✅ who_benefits, who_harmed, public_opinion on all 67 promises", "time": "09:32" },
+    { "task": "Insider trading signals", "outcome": "✅ 104,730 suspicious trades flagged with risk scores", "time": "09:32" }
   ],
-  "subagents": [
-    {
-      "label": "dashboard-update",
-      "task": "Update Nova monitoring dashboard with current project status",
-      "status": "active",
-      "spawned": "2026-02-05T23:15:00Z"
-    }
-  ],
+  "subagents": [],
   "recentDeploys": [
     {
       "project": "Accountability Dashboard",
       "url": "https://reps.arialabs.ai",
       "status": "✅ Live",
-      "deployed": "2026-02-05T22:45:00Z",
-      "notes": "Homepage redesign, Trump promises tracker, new grading system"
+      "deployed": "2026-02-06T16:58:00Z",
+      "notes": "Trump metrics, cabinet bios, financial disclosures, vote roll calls"
     },
     {
       "project": "FaceDrill POC",
@@ -74,8 +51,12 @@
       "project": "Nova Dashboard",
       "url": "https://dashboard.arialabs.ai",
       "status": "✅ Live",
-      "deployed": "2026-02-05T17:46:00Z",
-      "notes": "Metrics updated hourly"
+      "deployed": "2026-02-06T19:20:00Z",
+      "notes": "Kanban updated with today's work"
     }
-  ]
+  ],
+  "notes": {
+    "apiKeysAvailable": ["OpenFEC", "Congress.gov", "Brave Search", "Quiver API", "Yelp", "Cloudflare", "UptimeRobot"],
+    "workflow": "TDD with subagents (Product Owner, Scrum Master, Frontend, Backend, Data, QA)"
+  }
 }
