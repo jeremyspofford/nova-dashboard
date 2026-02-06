@@ -2,6 +2,12 @@
   "lastUpdated": "2026-02-06T19:20:00Z",
   "inProgress": [
     { 
+      "task": "LEG-3: Improve grading system",
+      "priority": "medium",
+      "assignee": "Nova (grading-system subagent)",
+      "notes": "Multi-factor grading: votes, donors, trades, disclosures"
+    },
+    { 
       "task": "FaceDrill POC — Awaiting Jeremy review", 
       "priority": "high",
       "url": "https://facedrill.arialabs.ai",
