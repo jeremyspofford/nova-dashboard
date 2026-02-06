@@ -6,6 +6,7 @@
 interface Env {
   SUPABASE_URL: string;
   SUPABASE_ANON_KEY: string;
+  SUPABASE_SERVICE_ROLE_KEY?: string; // For write operations (bypasses RLS)
 }
 
 interface KanbanTask {
@@ -141,14 +142,17 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
       );
     }
 
+    // Use service role key for writes (bypasses RLS) or fall back to anon key
+    const apiKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
+
     // Upsert (insert or update)
     const response = await fetch(
       `${env.SUPABASE_URL}/rest/v1/kanban_tasks`,
       {
         method: 'POST',
         headers: {
-          'apikey': env.SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${env.SUPABASE_ANON_KEY}`,
+          'apikey': apiKey,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
           'Prefer': 'resolution=merge-duplicates,return=representation',
         },

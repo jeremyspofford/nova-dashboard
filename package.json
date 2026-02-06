@@ -12,9 +12,9 @@
     "deploy": "wrangler pages deploy ."
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250115.0",
-    "vitest": "^1.2.1",
-    "wrangler": "^3.90.0"
+    "@cloudflare/workers-types": "^4.20260206.0",
+    "vitest": "^1.6.1",
+    "wrangler": "^3.114.17"
   },
   "keywords": [
     "dashboard",
