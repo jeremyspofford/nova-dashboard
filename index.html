@@ -1116,6 +1116,10 @@
                             <h4>🟢 Done Today <span class="count" id="done-count">0</span></h4>
                             <div id="done-items"></div>
                         </div>
+                        <div class="kanban-column" style="opacity: 0.9;">
+                            <h4>🧊 Icebox <span class="count" id="icebox-count">0</span></h4>
+                            <div id="icebox-items"></div>
+                        </div>
                     </div>
                 </section>
                 
@@ -1978,6 +1982,14 @@
                         tag: t.metadata?.tag,
                         time: new Date(t.updated_at).toLocaleTimeString()
                     })),
+                    icebox: tasks.filter(t => t.status === 'icebox').map(t => ({
+                        task: `${t.task_id}: ${t.title}`,
+                        priority: t.priority,
+                        assignee: t.assignee,
+                        notes: t.description,
+                        tag: t.metadata?.tag,
+                        type: t.metadata?.type || 'idea'
+                    })),
                     subagents: [],
                     recentDeploys: []
                 };
@@ -2023,6 +2035,17 @@
                         <div class="meta">${t.outcome}</div>
                     </div>
                 `).join('') || '<div style="color: var(--text-secondary); font-size: 0.75rem;">Nothing yet</div>';
+                
+                // Icebox / Ideas
+                document.getElementById('icebox-count').textContent = k.icebox?.length || 0;
+                document.getElementById('icebox-items').innerHTML = k.icebox?.length
+                    ? k.icebox.map((t, i) => `
+                        <div class="kanban-item" onclick='showTaskModal(${JSON.stringify(t).replace(/'/g, "\\'")})' style="border-left: 3px solid var(--secondary); opacity: 0.85;">
+                            ${t.task}${t.tag ? `<span class="tag-badge tag-${t.tag}">${t.tag}</span>` : ''}
+                            <div class="meta">💡 ${t.type || 'idea'} • ${t.assignee || 'Unassigned'}</div>
+                        </div>
+                    `).join('')
+                    : '<div style="color: var(--text-secondary); font-size: 0.75rem;">No ideas in the icebox</div>';
                 
                 // Subagents
                 const subagentsGrid = document.getElementById('subagents-grid');
