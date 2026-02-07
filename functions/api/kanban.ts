@@ -15,7 +15,7 @@ interface KanbanTask {
   title: string;
   description?: string;
   assignee: string;
-  status: 'backlog' | 'in_progress' | 'done' | 'blocked';
+  status: 'icebox' | 'backlog' | 'in_progress' | 'done' | 'blocked';
   priority: 'high' | 'medium' | 'low';
   created_at?: string;
   updated_at?: string;
@@ -109,11 +109,11 @@ async function handlePost(request: Request, env: Env): Promise<Response> {
     }
 
     // Validate status
-    if (!['backlog', 'in_progress', 'done', 'blocked'].includes(body.status)) {
+    if (!['icebox', 'backlog', 'in_progress', 'done', 'blocked'].includes(body.status)) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: 'Invalid status. Must be: backlog, in_progress, done, or blocked' 
+          error: 'Invalid status. Must be: icebox, backlog, in_progress, done, or blocked' 
         }),
         {
           status: 400,
@@ -218,7 +218,7 @@ async function handlePut(request: Request, env: Env): Promise<Response> {
     }
 
     // Validate status if provided
-    if (body.status && !['backlog', 'in_progress', 'done', 'blocked'].includes(body.status)) {
+    if (body.status && !['icebox', 'backlog', 'in_progress', 'done', 'blocked'].includes(body.status)) {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid status' }),
         { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
