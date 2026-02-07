@@ -1,67 +1,60 @@
 {
-  "lastUpdated": "2026-02-06T19:20:00Z",
-  "inProgress": [
-    { 
-      "task": "FaceDrill POC — Awaiting Jeremy review", 
+  "lastUpdated": "2026-02-07T09:50:00Z",
+  "sprint": "Data Quality & New Features",
+  "tasks": [
+    {
+      "id": "LEG-2",
+      "title": "Campaign Promises/Positions Feature",
+      "status": "in_progress",
       "priority": "high",
-      "url": "https://facedrill.arialabs.ai",
-      "assignee": "Jeremy"
-    }
-  ],
-  "upNext": [
-    { "task": "DATA-12: Refresh FEC finance data (cash on hand, self-funding)", "priority": "high", "assignee": "Nova", "notes": "Current data has all zeros - OpenFEC API key available" },
-    { "task": "DATA-13: Verify stock trades data accuracy via Quiver API", "priority": "high", "assignee": "Nova", "notes": "Check if Schumer missing trades is accurate" },
-    { "task": "LEG-2: Campaign positions tracker", "priority": "high", "assignee": "Nova", "notes": "VoteSmart API available" },
-    { "task": "SUPPR-1: Integrate Yelp API for restaurant data", "priority": "medium", "assignee": "Nova", "notes": "Yelp API key in 1Password" },
-    { "task": "SUPPR-2: Add restaurant ratings and photos", "priority": "medium", "assignee": "Nova" },
-    { "task": "FACEDRILL-1: Add spaced repetition algorithm", "priority": "medium", "assignee": "Nova", "notes": "Improve learning retention" },
-    { "task": "FACEDRILL-2: Import from LinkedIn/Slack", "priority": "low", "assignee": "Nova" },
-    { "task": "PORTFOLIO-1: Add SEO metadata and OG images", "priority": "low", "assignee": "Nova" },
-    { "task": "[JEREMY] Review FaceDrill POC (5 min)", "priority": "high", "assignee": "Jeremy" }
-  ],
-  "blocked": [
-    { "task": "Senate financial disclosures", "blocker": "efdsearch.senate.gov under maintenance", "assignee": "Nova" },
-    { "task": "Committee data (full 535 members)", "blocker": "ProPublica API discontinued — have 37 committees from Congress.gov", "assignee": "Nova" }
-  ],
-  "doneToday": [
-    { "task": "LEG-3: Multi-factor grading system", "outcome": "✅ 4 pillars (votes, donors, trades, disclosures), 62 tests", "time": "18:04" },
-    { "task": "HOME-1: Remove 'Coming Soon' badges", "outcome": "✅ Executive/Judicial clickable", "time": "11:48" },
-    { "task": "EXEC-1: Trump metrics rework", "outcome": "✅ Approval 42.3%, who he represents (Musk, donors, foreign govs), policy impact", "time": "11:50" },
-    { "task": "EXEC-2: Cabinet enrichment", "outcome": "✅ All 16 members: bios, conflicts (severity rated), net worth", "time": "11:50" },
-    { "task": "DATA-9: Committee assignments", "outcome": "✅ 37 committees, 25 leadership positions", "time": "11:50" },
-    { "task": "LEG-1: Financial disclosures UI", "outcome": "✅ Section on rep pages with PDF links", "time": "11:50" },
-    { "task": "House financial disclosures data", "outcome": "✅ 388 members, 1,872 filings (2020-2024)", "time": "10:41" },
-    { "task": "Vote UX improvements", "outcome": "✅ Roll call viewer, rep page modals, category filters", "time": "09:50" },
-    { "task": "Who Benefits analysis", "outcome": "✅ All 258 votes enriched with beneficiary data", "time": "09:32" },
-    { "task": "Trump promises harm analysis", "outcome": "✅ who_benefits, who_harmed, public_opinion on all 67 promises", "time": "09:32" },
-    { "task": "Insider trading signals", "outcome": "✅ 104,730 suspicious trades flagged with risk scores", "time": "09:32" }
-  ],
-  "subagents": [],
-  "recentDeploys": [
-    {
-      "project": "Accountability Dashboard",
-      "url": "https://reps.arialabs.ai",
-      "status": "✅ Live",
-      "deployed": "2026-02-06T16:58:00Z",
-      "notes": "Trump metrics, cabinet bios, financial disclosures, vote roll calls"
+      "assignee": "Nova",
+      "progress": 70,
+      "notes": "Data complete (100 members, 1,997 positions). Remaining: vote mapping, alignment score"
     },
     {
-      "project": "FaceDrill POC",
-      "url": "https://facedrill.arialabs.ai",
-      "status": "🟡 Pending Review",
-      "deployed": "2026-02-05T09:28:00Z",
-      "notes": "Awaiting Jeremy's approval"
+      "id": "DATA-13",
+      "title": "Scrape positions data",
+      "status": "done",
+      "priority": "high",
+      "assignee": "Nova",
+      "completedAt": "2026-02-07T09:46:00Z",
+      "notes": "100 members, 1,997 positions from OnTheIssues.org"
     },
     {
-      "project": "Nova Dashboard",
-      "url": "https://dashboard.arialabs.ai",
-      "status": "✅ Live",
-      "deployed": "2026-02-06T19:20:00Z",
-      "notes": "Kanban updated with today's work"
+      "id": "SENATE-1",
+      "title": "Senate Financial Disclosures",
+      "status": "blocked",
+      "priority": "high",
+      "assignee": "Data Engineer",
+      "blocker": "efdsearch.senate.gov under maintenance"
+    },
+    {
+      "id": "VIZ-1",
+      "title": "Approval Rating Trend Chart",
+      "status": "backlog",
+      "priority": "medium",
+      "assignee": "Frontend Developer"
+    },
+    {
+      "id": "UX-1",
+      "title": "Mobile Navigation Improvements",
+      "status": "backlog",
+      "priority": "medium",
+      "assignee": "UX/UI Developer"
+    },
+    {
+      "id": "PERF-1",
+      "title": "Image Optimization",
+      "status": "backlog",
+      "priority": "medium",
+      "assignee": "Frontend Developer"
+    },
+    {
+      "id": "DOCS-1",
+      "title": "API Documentation",
+      "status": "backlog",
+      "priority": "low",
+      "assignee": "Backend Engineer"
     }
-  ],
-  "notes": {
-    "apiKeysAvailable": ["OpenFEC", "Congress.gov", "Brave Search", "Quiver API", "Yelp", "Cloudflare", "UptimeRobot"],
-    "workflow": "TDD with subagents (Product Owner, Scrum Master, Frontend, Backend, Data, QA)"
-  }
+  ]
 }
