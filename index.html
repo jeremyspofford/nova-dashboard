@@ -1934,23 +1934,8 @@
                     subagentsGrid.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.875rem; font-style: italic;">No active subagents</div>';
                 }
                 
-                // Recent Deploys
-                const deploysGrid = document.getElementById('deploys-grid');
-                if (k.recentDeploys && k.recentDeploys.length > 0) {
-                    deploysGrid.innerHTML = k.recentDeploys.map(d => `
-                        <div class="app-card">
-                            <h3>${d.project}</h3>
-                            <p style="margin: 0.5rem 0;">${d.status}</p>
-                            ${d.notes ? `<p style="font-size: 0.75rem; color: var(--text-secondary);">${d.notes}</p>` : ''}
-                            <div class="links">
-                                <a href="${d.url}" target="_blank" onclick="event.stopPropagation()">View Site</a>
-                                ${d.deployed ? `<span style="font-size: 0.75rem; color: var(--text-secondary);">${new Date(d.deployed).toLocaleString()}</span>` : ''}
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    deploysGrid.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.875rem; font-style: italic;">No recent deploys</div>';
-                }
+                // Recent Deploys - fetch from GitHub Actions
+                loadRecentDeploys();
                 
             } catch (err) {
                 console.error('Failed to load kanban:', err);
@@ -2005,6 +1990,68 @@
             }
         }
         
+        // Fetch recent deploys from GitHub Actions
+        async function loadRecentDeploys() {
+            const deploysGrid = document.getElementById('deploys-grid');
+            const repos = [
+                { name: 'nova-dashboard', url: 'https://dashboard.arialabs.ai' },
+                { name: 'accountability-dashboard', url: 'https://reps.arialabs.ai' },
+                { name: 'suppr', url: 'https://suppr.arialabs.ai' },
+                { name: 'portfolio', url: 'https://jeremyspofford.dev' }
+            ];
+            
+            try {
+                const deploys = [];
+                
+                for (const repo of repos) {
+                    try {
+                        const res = await fetch(
+                            `https://api.github.com/repos/jeremyspofford/${repo.name}/actions/runs?per_page=1&status=completed`,
+                            { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+                        );
+                        
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.workflow_runs && data.workflow_runs.length > 0) {
+                                const run = data.workflow_runs[0];
+                                deploys.push({
+                                    project: repo.name,
+                                    url: repo.url,
+                                    status: run.conclusion === 'success' ? '✅ Success' : '❌ Failed',
+                                    success: run.conclusion === 'success',
+                                    deployed: run.updated_at,
+                                    commit: run.head_commit?.message?.split('\n')[0] || 'No message'
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`Failed to fetch deploys for ${repo.name}:`, e);
+                    }
+                }
+                
+                if (deploys.length > 0) {
+                    // Sort by deploy time (newest first)
+                    deploys.sort((a, b) => new Date(b.deployed) - new Date(a.deployed));
+                    
+                    deploysGrid.innerHTML = deploys.map(d => `
+                        <div class="app-card" style="border-left: 3px solid ${d.success ? 'var(--success)' : 'var(--error)'};">
+                            <h3>${d.project} <span class="status ${d.success ? 'live' : 'dev'}">${d.status}</span></h3>
+                            <p style="margin: 0.5rem 0; font-size: 0.8125rem; color: var(--text-secondary);">${d.commit}</p>
+                            <div class="links">
+                                <a href="${d.url}" target="_blank" onclick="event.stopPropagation()">View Site</a>
+                                <span style="font-size: 0.75rem; color: var(--text-secondary);">${new Date(d.deployed).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    deploysGrid.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.875rem; font-style: italic;">No recent deploys found</div>';
+                }
+            } catch (err) {
+                console.error('Failed to load deploys:', err);
+                deploysGrid.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.875rem; font-style: italic;">Failed to load deploys</div>';
+            }
+        }
+        
         // Check infrastructure status (Pi is always online since we're serving from it)
         async function checkInfraStatus() {
             // Pi is always online (we're running from it)
@@ -2031,6 +2078,7 @@
             loadMetrics();
             loadKanban();
             loadRepos();
+            loadRecentDeploys();
             checkSiteStatus();
             checkInfraStatus();
         }
