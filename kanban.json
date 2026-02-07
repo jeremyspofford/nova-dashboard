@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-07T09:50:00Z",
+  "lastUpdated": "2026-02-07T15:53:00Z",
   "sprint": "Data Quality & New Features",
   "tasks": [
     {
@@ -10,6 +10,22 @@
       "assignee": "Nova",
       "progress": 70,
       "notes": "Data complete (100 members, 1,997 positions). Remaining: vote mapping, alignment score"
+    },
+    {
+      "id": "INFRA-1",
+      "title": "Authenticate with other LLM providers",
+      "status": "backlog",
+      "priority": "high",
+      "assignee": "Jeremy",
+      "notes": "Add Google (Gemini) and OpenAI API keys to OpenClaw for sub-agent model diversity"
+    },
+    {
+      "id": "INFRA-2",
+      "title": "Migrate portfolio DNS to Cloudflare",
+      "status": "backlog",
+      "priority": "high",
+      "assignee": "Jeremy",
+      "notes": "Move jeremyspofford.dev from AWS Route53 to Cloudflare. Portfolio already on Cloudflare Pages (portfolio-3jx.pages.dev)"
     },
     {
       "id": "DATA-13",
