@@ -9,15 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Aria Labs Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Apply theme immediately to prevent flash
-        (function() {
-            const saved = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const theme = saved || (prefersDark ? 'dark' : 'light');
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
+    <!-- Light theme only -->
     <style>
         /* Celestial Design System — Aria Labs */
         
@@ -40,23 +32,7 @@
             --sidebar-width: 220px;
         }
         
-        /* Dark theme (Celestial primary) */
-        [data-theme="dark"] {
-            --bg-primary: #0F0F23;
-            --bg-secondary: #1A1A2E;
-            --bg-tertiary: #25253D;
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --accent: #6366F1;
-            --accent-light: #818CF8;
-            --secondary: #06B6D4;
-            --success: #10B981;
-            --warning: #F59E0B;
-            --error: #EF4444;
-            --border: #334155;
-            --shadow: rgba(0, 0, 0, 0.4);
-            --glow: rgba(99, 102, 241, 0.3);
-        }
+        /* Light theme only */
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -245,12 +221,6 @@
             opacity: 0.9;
         }
         
-        .theme-toggle {
-            width: 36px;
-            padding: 0.5rem;
-            justify-content: center;
-        }
-        
         /* Sections */
         .section {
             margin-bottom: 2.5rem;
@@ -312,9 +282,6 @@
         
         .app-card .status.live { background: var(--success); color: #fff; }
         .app-card .status.dev { background: var(--warning); color: #fff; }
-        
-        [data-theme="dark"] .app-card .status.live { color: #000; }
-        [data-theme="dark"] .app-card .status.dev { color: #000; }
         
         .app-card p {
             color: var(--text-secondary);
@@ -822,9 +789,7 @@
             </nav>
             
             <div class="sidebar-footer">
-                <button class="btn" onclick="toggleTheme()" id="theme-btn-sidebar">
-                    🌙 Dark Mode
-                </button>
+                <!-- Light theme only -->
             </div>
         </aside>
         
@@ -835,9 +800,6 @@
                     <h2 class="header-title" id="page-title">Dashboard Overview</h2>
                     <div class="header-actions">
                         <button class="btn" onclick="loadAll()">↻ Refresh</button>
-                        <button class="btn theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">
-                            🌙
-                        </button>
                     </div>
                 </header>
                 
@@ -1092,26 +1054,7 @@
             }
         };
         
-        // Theme management
-        function getTheme() {
-            return document.documentElement.getAttribute('data-theme') || 'light';
-        }
-        
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            updateThemeButton();
-        }
-        
-        function toggleTheme() {
-            setTheme(getTheme() === 'dark' ? 'light' : 'dark');
-        }
-        
-        function updateThemeButton() {
-            const isDark = getTheme() === 'dark';
-            document.getElementById('theme-btn').textContent = isDark ? '☀️' : '🌙';
-            document.getElementById('theme-btn-sidebar').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-        }
+        // Light theme only - no theme management needed
         
         // Sidebar toggle for mobile
         function toggleSidebar() {
@@ -1311,15 +1254,7 @@
             showModal('🖥️ System Status', content);
         }
         
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('theme')) {
-                setTheme(e.matches ? 'dark' : 'light');
-            }
-        });
-        
-        // Initialize theme button
-        updateThemeButton();
+        // Light theme only
         
         function formatNumber(n) {
             if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
@@ -1453,11 +1388,11 @@
         }
         
         function renderCharts(m) {
-            const isDark = getTheme() === 'dark';
-            const gridColor = isDark ? '#30363d' : '#d0d7de';
-            const textColor = isDark ? '#8b949e' : '#656d76';
-            const accentColor = isDark ? '#58a6ff' : '#0969da';
-            const successColor = isDark ? '#3fb950' : '#1a7f37';
+            // Light theme colors
+            const gridColor = '#d0d7de';
+            const textColor = '#656d76';
+            const accentColor = '#0969da';
+            const successColor = '#1a7f37';
             
             const chartOpts = {
                 responsive: true,
@@ -1493,7 +1428,7 @@
                     datasets: [{
                         data: hours.map(h => m.activity.byHour[h] || 0),
                         borderColor: successColor,
-                        backgroundColor: isDark ? 'rgba(63,185,80,0.1)' : 'rgba(26,127,55,0.1)',
+                        backgroundColor: 'rgba(26,127,55,0.1)',
                         fill: true,
                         tension: 0.3
                     }]
