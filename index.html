@@ -1628,7 +1628,7 @@
                 document.getElementById('done-items').innerHTML = k.doneToday.slice(0, 5).map((t, i) => `
                     <div class="kanban-item done" onclick='showTaskModal(${JSON.stringify(t).replace(/'/g, "\\'")})'>
                         ${t.task}
-                        <div class="meta">✓ ${t.outcome}</div>
+                        <div class="meta">${t.outcome}</div>
                     </div>
                 `).join('') || '<div style="color: var(--text-secondary); font-size: 0.75rem;">Nothing yet</div>';
                 
